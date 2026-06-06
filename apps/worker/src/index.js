@@ -28,6 +28,7 @@ const {
   ingestAll,
   scoreOpportunities,
   autoSelectWinner,
+  generateContent,
   runFullPipeline,
 } = require("@ame/pipeline");
 const { prisma } = require("@ame/database");
@@ -79,6 +80,14 @@ async function main() {
       break;
     }
 
+    case "generate-content": {
+      const exportMd = args.includes("--export");
+      const result = await generateContent({ autoApprove: true, exportMarkdown: exportMd });
+      console.log(JSON.stringify(result, null, 2));
+      if (!result.success) process.exit(1);
+      break;
+    }
+
     case "pipeline": {
       const result = await runFullPipeline();
       console.log(JSON.stringify(result, null, 2));
@@ -95,7 +104,9 @@ Commands:
   ingest-all               Ingest all active sources
   score                    Calculate opportunity scores
   auto-select              AI picks ONE winner and auto-approves
-  pipeline                 ingest-all → score → auto-select
+  generate-content         Generate 5 SEO articles for approved winner
+  generate-content --export  Also write Markdown files to content/
+  pipeline                 Full automation: ingest → score → select → generate
 `);
       process.exit(command ? 1 : 0);
   }

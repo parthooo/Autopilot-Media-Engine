@@ -2,6 +2,9 @@
 
 const DEFAULT_SUBREDDITS = ["technology", "programming", "entrepreneur", "SideProject"];
 
+/** @type {{ token: string | null, expiresAt: number }} */
+const tokenCache = { token: null, expiresAt: 0 };
+
 /**
  * @param {object} [config]
  * @returns {Promise<RawSignalInput[]>}
@@ -13,12 +16,16 @@ async function fetchReddit(config = {}) {
     process.env.REDDIT_USER_AGENT ||
     "autopilot-media-engine:1.0.0 (trend discovery bot)";
 
+  const accessToken = await getAccessToken(userAgent);
   const signals = [];
 
   for (const subreddit of subreddits) {
-    const url = `https://www.reddit.com/r/${subreddit}/hot.json?limit=${limit}`;
+    const url = `https://oauth.reddit.com/r/${subreddit}/hot?limit=${limit}`;
     const response = await fetch(url, {
-      headers: { "User-Agent": userAgent },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "User-Agent": userAgent,
+      },
     });
 
     if (!response.ok) {
@@ -50,11 +57,57 @@ async function fetchReddit(config = {}) {
       });
     });
 
-    // Respect Reddit rate limits between subreddit fetches
     await sleep(1100);
   }
 
   return signals;
+}
+
+/**
+ * Reddit blocked unauthenticated .json access in May 2026 — OAuth is required.
+ * @param {string} userAgent
+ * @returns {Promise<string>}
+ */
+async function getAccessToken(userAgent) {
+  const clientId = process.env.REDDIT_CLIENT_ID;
+  const clientSecret = process.env.REDDIT_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error(
+      "Reddit requires OAuth (anonymous API blocked since May 2026). " +
+        "Create a script app at reddit.com/prefs/apps, then set REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET in .env"
+    );
+  }
+
+  if (tokenCache.token && Date.now() < tokenCache.expiresAt) {
+    return tokenCache.token;
+  }
+
+  const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+  const response = await fetch("https://www.reddit.com/api/v1/access_token", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": userAgent,
+    },
+    body: "grant_type=client_credentials",
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Reddit OAuth failed (${response.status}): ${body.slice(0, 200)}`);
+  }
+
+  const data = await response.json();
+  if (!data.access_token) {
+    throw new Error("Reddit OAuth returned no access_token");
+  }
+
+  tokenCache.token = data.access_token;
+  tokenCache.expiresAt = Date.now() + (data.expires_in || 3600) * 1000 - 60_000;
+
+  return tokenCache.token;
 }
 
 /**

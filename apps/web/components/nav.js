@@ -11,6 +11,7 @@ const links = [
     label: "Opportunities",
     match: (path) => path.startsWith("/opportunities"),
   },
+  { href: "/content", label: "Content", match: (path) => path.startsWith("/content") },
   { href: "/ingestion", label: "Ingestion", match: (path) => path.startsWith("/ingestion") },
 ];
 

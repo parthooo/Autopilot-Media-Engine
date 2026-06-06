@@ -13,11 +13,22 @@ const sources = [
   {
     name: "Reddit",
     slug: "reddit",
-    isActive: true,
+    isActive: false,
     scrapeIntervalHours: 6,
     config: {
       subreddits: ["technology", "programming", "entrepreneur", "SideProject"],
       limit: 25,
+    },
+  },
+  {
+    name: "Dev.to",
+    slug: "dev-to",
+    isActive: true,
+    scrapeIntervalHours: 6,
+    config: {
+      perPage: 30,
+      topDays: 7,
+      tags: ["startup", "ai", "javascript", "webdev"],
     },
   },
   {
@@ -30,23 +41,23 @@ const sources = [
   {
     name: "GitHub Trending",
     slug: "github-trending",
-    isActive: false,
+    isActive: true,
     scrapeIntervalHours: 12,
-    config: { language: "javascript", since: "daily" },
+    config: { since: "daily" },
   },
   {
     name: "Product Hunt",
     slug: "product-hunt",
-    isActive: false,
+    isActive: true,
     scrapeIntervalHours: 12,
     config: {},
   },
   {
     name: "YouTube",
     slug: "youtube",
-    isActive: false,
+    isActive: true,
     scrapeIntervalHours: 12,
-    config: { region: "US" },
+    config: { region: "US", maxResults: 25 },
   },
 ];
 
