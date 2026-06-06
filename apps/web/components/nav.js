@@ -22,7 +22,6 @@ export function Nav() {
     <aside className="sidebar">
       <Link href="/" className="sidebar-brand">
         Autopilot Media Engine
-        <span>Discovery · Scoring</span>
       </Link>
       <nav className="sidebar-nav" aria-label="Main">
         {links.map((link) => (

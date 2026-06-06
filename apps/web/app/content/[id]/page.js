@@ -24,7 +24,7 @@ export default async function ContentDetailPage({ params }) {
         title={asset.title}
         subtitle={`${asset.assetType} · ${asset.opportunity.topic.title}`}
         back={
-          <p style={{ marginBottom: "0.75rem" }}>
+          <p className="back-nav">
             <Link href="/content" className="back-link">
               ← Content
             </Link>
@@ -32,9 +32,9 @@ export default async function ContentDetailPage({ params }) {
         }
       />
 
-      <div className="panel" style={{ marginBottom: "1.5rem" }}>
-        <div className="panel-header">Metadata</div>
-        <div style={{ padding: "1.25rem" }} className="detail-grid">
+      <section className="panel panel-spaced">
+        <div className="panel-title">Metadata</div>
+        <div className="panel-body detail-grid">
           <div className="detail-row">
             <strong>Status</strong>
             <StatusBadge status={asset.status} />
@@ -52,26 +52,12 @@ export default async function ContentDetailPage({ params }) {
             <span>{asset.metadata?.wordCount ?? "—"}</span>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="panel">
-        <div className="panel-header">Article preview</div>
-        <pre
-          style={{
-            padding: "1.25rem",
-            margin: 0,
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.8125rem",
-            lineHeight: 1.6,
-            maxHeight: "70vh",
-            overflow: "auto",
-          }}
-        >
-          {asset.body}
-        </pre>
-      </div>
+      <section className="panel">
+        <div className="panel-title">Preview</div>
+        <pre className="article-preview">{asset.body}</pre>
+      </section>
     </div>
   );
 }
