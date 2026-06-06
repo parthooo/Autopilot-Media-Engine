@@ -2,8 +2,5 @@
   "name": "@ame/ingest",
   "version": "0.1.0",
   "private": true,
-  "main": "./src/index.js",
-  "dependencies": {
-    "google-trends-api": "^4.9.2"
-  }
+  "main": "./src/index.js"
 }

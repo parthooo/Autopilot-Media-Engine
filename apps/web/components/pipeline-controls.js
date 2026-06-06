@@ -7,7 +7,8 @@ const STEPS = [
   { step: "ingest", label: "Run Ingest", desc: "Fetch trends from all sources" },
   { step: "score", label: "Run Score", desc: "Calculate opportunity scores" },
   { step: "auto-select", label: "AI Pick Winner", desc: "Gemini selects & approves ONE niche" },
-  { step: "full", label: "Full Pipeline", desc: "Ingest → Score → AI select (recommended)" },
+  { step: "generate-content", label: "Generate Articles", desc: "Write 5 SEO articles for AI winner" },
+  { step: "full", label: "Full Pipeline", desc: "Ingest → Score → AI select → articles" },
 ];
 
 export function PipelineControls() {

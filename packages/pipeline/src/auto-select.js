@@ -136,15 +136,18 @@ async function autoSelectWinner() {
   };
 }
 
+const { generateContent } = require("./generate-content");
+
 /**
- * Full automated pipeline: ingest → score → auto-select winner.
+ * Full automated pipeline: ingest → score → auto-select → generate content.
  */
 async function runFullPipeline() {
   const ingest = await ingestAll();
   const score = await scoreOpportunities();
   const select = await autoSelectWinner();
+  const content = select.success ? await generateContent({ autoApprove: true }) : { skipped: true };
 
-  return { ingest, score, select };
+  return { ingest, score, select, content };
 }
 
 module.exports = { autoSelectWinner, runFullPipeline };

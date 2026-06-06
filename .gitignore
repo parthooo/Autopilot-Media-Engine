@@ -33,6 +33,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Generated content exports (local worker --export)
+/content/
+
 # Vercel
 .vercel
 

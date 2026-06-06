@@ -2,6 +2,7 @@ import {
   ingestAll,
   scoreOpportunities,
   autoSelectWinner,
+  generateContent,
   runFullPipeline,
 } from "@ame/pipeline";
 import { dispatchGitHubWorkflow } from "../../../../lib/github-dispatch";
@@ -13,6 +14,7 @@ const STEPS = {
   ingest: { fn: ingestAll, workflow: "ingest.yml" },
   score: { fn: scoreOpportunities, workflow: "score.yml" },
   "auto-select": { fn: autoSelectWinner, workflow: "auto-select.yml" },
+  "generate-content": { fn: () => generateContent({ autoApprove: true }), workflow: "generate-content.yml" },
   full: { fn: runFullPipeline, workflow: "pipeline.yml" },
 };
 

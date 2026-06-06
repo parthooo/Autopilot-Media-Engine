@@ -12,6 +12,8 @@ Fill in:
 |----------|-----------------|
 | `DATABASE_URL` | [Neon](https://neon.tech) → Connection string |
 | `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/apikey) — **free** |
+| `REDDIT_CLIENT_ID` | [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) → create **script** app → ID under app name |
+| `REDDIT_CLIENT_SECRET` | Same page → **secret** field |
 | `REDDIT_USER_AGENT` | `autopilot-media-engine:1.0.0 (by /u/yourusername)` |
 | `ADMIN_API_KEY` | Any random string (protects manual API triggers) |
 
@@ -55,8 +57,11 @@ Go to: **GitHub repo → Settings → Secrets and variables → Actions → New 
 | Secret | Value |
 |--------|-------|
 | `DATABASE_URL` | Same Neon connection string from `.env` |
+| `REDDIT_CLIENT_ID` | Same as `.env` |
+| `REDDIT_CLIENT_SECRET` | Same as `.env` |
 | `REDDIT_USER_AGENT` | Same as `.env` |
 | `GEMINI_API_KEY` | Same as `.env` — enables AI winner selection |
+| `YOUTUBE_API_KEY` | Same as `.env` — enables YouTube trending ingest |
 
 ### Verify it works
 
@@ -139,6 +144,8 @@ Falls back to rule-based selection (evergreen + monetization scores). Still auto
 |----------|----------|
 | `DATABASE_URL` | Yes |
 | `GEMINI_API_KEY` | Yes (for AI buttons on Vercel) |
+| `REDDIT_CLIENT_ID` | Yes (if running ingest from Vercel) |
+| `REDDIT_CLIENT_SECRET` | Yes (if running ingest from Vercel) |
 | `REDDIT_USER_AGENT` | Yes (if running ingest from Vercel) |
 
 4. Optional: `GITHUB_TOKEN` + `GITHUB_REPOSITORY` to trigger GitHub Actions from buttons
@@ -148,7 +155,35 @@ If build fails with `@prisma/client did not initialize`, ensure latest code is p
 
 ---
 
-## 6. What happens next (roadmap)
+## 6. Ingestion troubleshooting
+
+| Source | Symptom | Fix |
+|--------|---------|-----|
+| **Google Trends** | `Unexpected token '<'` | Fixed in latest code — uses official Trends RSS feed instead of broken `google-trends-api` package |
+| **Reddit** | `403` or can't create app | Reddit blocked anonymous API in May 2026 and **new app registration is often broken**. If `reddit.com/prefs/apps` won't create an app, leave Reddit disabled — **Dev.to** is enabled as a free replacement (no OAuth) |
+| **Hacker News** | — | Should always work (no auth) |
+| **Dev.to** | — | Free public API, no auth |
+| **GitHub Trending** | HTML parse error | Scrapes `github.com/trending` — no API key needed |
+| **Product Hunt** | Feed error | Uses public Atom feed at `producthunt.com/feed` |
+| **YouTube** | Missing API key | Create key in [Google Cloud Console](https://console.cloud.google.com/) → enable **YouTube Data API v3** → add `YOUTUBE_API_KEY` to `.env`, then set `youtube` source active in seed |
+
+### Active sources (default)
+
+| Source | Auth | Cost |
+|--------|------|------|
+| Hacker News | None | Free |
+| Google Trends | None (RSS) | Free |
+| Dev.to | None | Free |
+| GitHub Trending | None (scrape) | Free |
+| Product Hunt | None (RSS) | Free |
+| Reddit | OAuth (broken for new apps) | Disabled |
+| YouTube | `YOUTUBE_API_KEY` | Free tier (10k units/day) |
+
+After updating `.env`, run **Run Ingest** on the dashboard or `npm run worker -- ingest-all`.
+
+---
+
+## 7. What happens next (roadmap)
 
 The AI winner includes a **content strategy** (5 article titles). Next phases will:
 
