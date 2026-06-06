@@ -1,8 +1,8 @@
-import { prisma } from "../lib/db";
-import { ScoreBadge } from "../components/score-badge";
-import { StatusBadge } from "../components/status-badge";
-import { PageHeader } from "../components/page-header";
-import { PipelineControls } from "../components/pipeline-controls";
+import { prisma } from "../../lib/db";
+import { ScoreBadge } from "../../components/score-badge";
+import { StatusBadge } from "../../components/status-badge";
+import { PageHeader } from "../../components/page-header";
+import { PipelineControls } from "../../components/pipeline-controls";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";

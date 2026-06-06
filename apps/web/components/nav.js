@@ -35,6 +35,25 @@ export function Nav() {
           </Link>
         ))}
       </nav>
+      <div className="sidebar-footer">
+        <Link
+          href="/guide"
+          className={`sidebar-link sidebar-guide${pathname === "/guide" ? " is-active" : ""}`}
+          aria-current={pathname === "/guide" ? "page" : undefined}
+        >
+          Guide
+        </Link>
+        <button
+          type="button"
+          className="btn sidebar-logout"
+          onClick={async () => {
+            await fetch("/api/auth/logout", { method: "POST" });
+            window.location.href = "/login";
+          }}
+        >
+          Sign out
+        </button>
+      </div>
     </aside>
   );
 }
