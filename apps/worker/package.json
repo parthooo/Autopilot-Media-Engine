@@ -1,0 +1,9 @@
+{
+  "name": "@ame/worker",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@ame/database": "*",
+    "@ame/pipeline": "*"
+  }
+}

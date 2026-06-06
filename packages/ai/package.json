@@ -1,0 +1,9 @@
+{
+  "name": "@ame/ai",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.js",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0"
+  }
+}

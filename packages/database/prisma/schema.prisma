@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IngestionRunStatus {
+  running
+  success
+  failed
+}
+
+enum OpportunityStatus {
+  new
+  reviewing
+  approved
+  rejected
+  archived
+}
+
+model Source {
+  id                    String         @id @default(uuid()) @db.Uuid
+  name                  String         @db.VarChar(100)
+  slug                  String         @unique @db.VarChar(50)
+  isActive              Boolean        @default(false) @map("is_active")
+  scrapeIntervalHours   Int            @default(6) @map("scrape_interval_hours")
+  config                Json           @default("{}")
+  createdAt             DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  rawSignals            RawSignal[]
+  ingestionRuns         IngestionRun[]
+  topicMetrics          TopicMetric[]
+
+  @@map("sources")
+}
+
+model IngestionRun {
+  id             String             @id @default(uuid()) @db.Uuid
+  sourceId       String             @map("source_id") @db.Uuid
+  status         IngestionRunStatus
+  recordsFetched Int                @default(0) @map("records_fetched")
+  recordsNew     Int                @default(0) @map("records_new")
+  errorMessage   String?            @map("error_message") @db.Text
+  startedAt      DateTime           @map("started_at") @db.Timestamptz
+  completedAt    DateTime?          @map("completed_at") @db.Timestamptz
+
+  source         Source             @relation(fields: [sourceId], references: [id])
+
+  @@index([sourceId, startedAt(sort: Desc)])
+  @@index([status, startedAt(sort: Desc)])
+  @@map("ingestion_runs")
+}
+
+model Topic {
+  id             String        @id @default(uuid()) @db.Uuid
+  slug           String        @unique @db.VarChar(255)
+  title          String        @db.VarChar(500)
+  normalizedKey  String        @unique @map("normalized_key") @db.VarChar(255)
+  category       String?       @db.VarChar(100)
+  keywords       String[]      @default([])
+  firstSeenAt    DateTime      @map("first_seen_at") @db.Timestamptz
+  lastSeenAt     DateTime      @map("last_seen_at") @db.Timestamptz
+  signalCount    Int           @default(1) @map("signal_count")
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  rawSignals     RawSignal[]
+  topicMetrics   TopicMetric[]
+  opportunity    Opportunity?
+
+  @@index([lastSeenAt(sort: Desc)])
+  @@index([category])
+  @@map("topics")
+}
+
+model RawSignal {
+  id           String   @id @default(uuid()) @db.Uuid
+  sourceId     String   @map("source_id") @db.Uuid
+  externalId   String   @map("external_id") @db.VarChar(255)
+  title        String   @db.VarChar(500)
+  url          String?  @db.Text
+  description  String?  @db.Text
+  rawPayload   Json     @map("raw_payload")
+  discoveredAt DateTime @map("discovered_at") @db.Timestamptz
+  topicId      String?  @map("topic_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  source       Source   @relation(fields: [sourceId], references: [id])
+  topic        Topic?   @relation(fields: [topicId], references: [id])
+
+  @@unique([sourceId, externalId])
+  @@index([sourceId, discoveredAt(sort: Desc)])
+  @@index([topicId])
+  @@map("raw_signals")
+}
+
+model TopicMetric {
+  id               String   @id @default(uuid()) @db.Uuid
+  topicId          String   @map("topic_id") @db.Uuid
+  sourceId         String   @map("source_id") @db.Uuid
+  rankPosition     Int?     @map("rank_position")
+  volumeEstimate   Int?     @map("volume_estimate")
+  velocityScore    Float?   @map("velocity_score")
+  engagementScore  Float?   @map("engagement_score")
+  capturedAt       DateTime @map("captured_at") @db.Timestamptz
+
+  topic            Topic    @relation(fields: [topicId], references: [id])
+  source           Source   @relation(fields: [sourceId], references: [id])
+
+  @@index([topicId, capturedAt(sort: Desc)])
+  @@index([sourceId, capturedAt(sort: Desc)])
+  @@map("topic_metrics")
+}
+
+model Opportunity {
+  id                 String            @id @default(uuid()) @db.Uuid
+  topicId            String            @unique @map("topic_id") @db.Uuid
+  growthScore        Float             @default(0) @map("growth_score")
+  competitionScore   Float             @default(0) @map("competition_score")
+  monetizationScore  Float             @default(0) @map("monetization_score")
+  usaAudienceScore   Float             @default(0) @map("usa_audience_score")
+  evergreenScore     Float             @default(0) @map("evergreen_score")
+  opportunityScore   Float             @default(0) @map("opportunity_score")
+  status             OpportunityStatus @default(new)
+  scoredAt           DateTime          @map("scored_at") @db.Timestamptz
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz
+
+  topic              Topic             @relation(fields: [topicId], references: [id])
+  scoreHistory       OpportunityScoreHistory[]
+  analysis           OpportunityAnalysis?
+
+  @@index([opportunityScore(sort: Desc)])
+  @@index([status, opportunityScore(sort: Desc)])
+  @@map("opportunities")
+}
+
+model OpportunityScoreHistory {
+  id                String      @id @default(uuid()) @db.Uuid
+  opportunityId     String      @map("opportunity_id") @db.Uuid
+  opportunityScore  Float       @map("opportunity_score")
+  scoresJson        Json        @map("scores_json")
+  recordedAt        DateTime    @default(now()) @map("recorded_at") @db.Timestamptz
+
+  opportunity       Opportunity @relation(fields: [opportunityId], references: [id])
+
+  @@index([opportunityId, recordedAt(sort: Desc)])
+  @@map("opportunity_score_history")
+}
+
+model OpportunityAnalysis {
+  id                String      @id @default(uuid()) @db.Uuid
+  opportunityId     String      @unique @map("opportunity_id") @db.Uuid
+  trendExplanation  String      @map("trend_explanation") @db.Text
+  audienceAnalysis  Json        @map("audience_analysis")
+  seoKeywords       Json        @map("seo_keywords")
+  youtubeIdeas      Json        @map("youtube_ideas")
+  affiliatePotential Json       @map("affiliate_potential")
+  revenueEstimate   Json        @map("revenue_estimate")
+  contentStrategy   Json        @map("content_strategy")
+  aiReasoning       String?     @map("ai_reasoning") @db.Text
+  selectionMethod   String      @default("gemini") @map("selection_method") @db.VarChar(20)
+  modelVersion      String      @map("model_version") @db.VarChar(50)
+  analyzedAt        DateTime    @map("analyzed_at") @db.Timestamptz
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz
+
+  opportunity       Opportunity @relation(fields: [opportunityId], references: [id])
+
+  @@map("opportunity_analyses")
+}

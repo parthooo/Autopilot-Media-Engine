@@ -1,0 +1,42 @@
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import "./globals.css";
+import { Nav } from "../components/nav";
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  weight: ["500", "600", "700"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  weight: ["400", "500"],
+});
+
+export const metadata = {
+  title: "Autopilot Media Engine",
+  description: "Trend discovery and opportunity scoring platform",
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+    >
+      <body>
+        <div className="app-shell">
+          <Nav />
+          <main className="main-content">{children}</main>
+        </div>
+      </body>
+    </html>
+  );
+}

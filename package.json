@@ -1,0 +1,23 @@
+{
+  "name": "autopilot-media-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Central intelligence platform for automated media businesses",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @ame/web",
+    "build": "npm run build -w @ame/web",
+    "worker": "node apps/worker/src/index.js",
+    "db:generate": "npm run generate -w @ame/database",
+    "db:migrate": "npm run migrate -w @ame/database",
+    "db:push": "npm run push -w @ame/database",
+    "db:seed": "npm run seed -w @ame/database",
+    "db:studio": "npm run studio -w @ame/database"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
