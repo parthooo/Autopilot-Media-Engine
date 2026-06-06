@@ -15,7 +15,7 @@ Fill in:
 | `REDDIT_CLIENT_ID` | [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) → create **script** app → ID under app name |
 | `REDDIT_CLIENT_SECRET` | Same page → **secret** field |
 | `REDDIT_USER_AGENT` | `autopilot-media-engine:1.0.0 (by /u/yourusername)` |
-| `ADMIN_API_KEY` | Any random string (protects manual API triggers) |
+| `SITE_PASSWORD` | Dashboard login password (set on Vercel for production; optional locally) |
 
 ```bash
 npm install
@@ -143,6 +143,7 @@ Falls back to rule-based selection (evergreen + monetization scores). Still auto
 | Variable | Required |
 |----------|----------|
 | `DATABASE_URL` | Yes |
+| `SITE_PASSWORD` | Yes — locks dashboard behind `/login` (works on free Hobby plan) |
 | `GEMINI_API_KEY` | Yes (for AI buttons on Vercel) |
 | `YOUTUBE_API_KEY` | Yes (if ingest runs inline on Vercel; also required in GitHub Secrets) |
 | `REDDIT_CLIENT_ID` | Yes (if running ingest from Vercel) |

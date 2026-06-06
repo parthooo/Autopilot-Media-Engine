@@ -1,7 +1,5 @@
 import { IBM_Plex_Sans, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Nav } from "../components/nav";
-
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
@@ -31,12 +29,7 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${spaceGrotesk.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable}`}
     >
-      <body>
-        <div className="app-shell">
-          <Nav />
-          <main className="main-content">{children}</main>
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

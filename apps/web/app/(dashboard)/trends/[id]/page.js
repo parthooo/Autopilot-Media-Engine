@@ -1,6 +1,6 @@
-import { prisma } from "../../../lib/db";
-import { ScoreBadge } from "../../../components/score-badge";
-import { PageHeader } from "../../../components/page-header";
+import { prisma } from "../../../../lib/db";
+import { ScoreBadge } from "../../../../components/score-badge";
+import { PageHeader } from "../../../../components/page-header";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

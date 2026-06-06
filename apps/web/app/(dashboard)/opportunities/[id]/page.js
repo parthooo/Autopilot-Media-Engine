@@ -1,8 +1,8 @@
-import { prisma } from "../../../lib/db";
-import { ScoreBadge } from "../../../components/score-badge";
-import { StatusBadge } from "../../../components/status-badge";
-import { OpportunityActions } from "../../../components/opportunity-actions";
-import { PageHeader } from "../../../components/page-header";
+import { prisma } from "../../../../lib/db";
+import { ScoreBadge } from "../../../../components/score-badge";
+import { StatusBadge } from "../../../../components/status-badge";
+import { OpportunityActions } from "../../../../components/opportunity-actions";
+import { PageHeader } from "../../../../components/page-header";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

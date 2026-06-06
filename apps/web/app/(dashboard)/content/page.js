@@ -1,14 +1,14 @@
-import { prisma } from "../../lib/db";
-import { PageHeader } from "../../components/page-header";
-import { StatusBadge } from "../../components/status-badge";
-import { Pagination } from "../../components/pagination";
+import { prisma } from "../../../lib/db";
+import { PageHeader } from "../../../components/page-header";
+import { StatusBadge } from "../../../components/status-badge";
+import { Pagination } from "../../../components/pagination";
 import {
   PAGE_SIZE,
   clampPage,
   pageSkip,
   parsePage,
   totalPages,
-} from "../../lib/pagination";
+} from "../../../lib/pagination";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";

@@ -1,6 +1,6 @@
-import { prisma } from "../../../lib/db";
-import { PageHeader } from "../../../components/page-header";
-import { StatusBadge } from "../../../components/status-badge";
+import { prisma } from "../../../../lib/db";
+import { PageHeader } from "../../../../components/page-header";
+import { StatusBadge } from "../../../../components/status-badge";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
