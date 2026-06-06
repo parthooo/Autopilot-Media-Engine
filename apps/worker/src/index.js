@@ -31,7 +31,7 @@ const {
   generateContent,
   runFullPipeline,
 } = require("@ame/pipeline");
-const { prisma } = require("@ame/database");
+const { prisma, ensureDatabaseReady } = require("@ame/database");
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -41,6 +41,10 @@ function getFlag(name) {
 }
 
 async function main() {
+  if (command && command !== "help") {
+    await ensureDatabaseReady();
+  }
+
   switch (command) {
     case "ingest": {
       const source = getFlag("source");
