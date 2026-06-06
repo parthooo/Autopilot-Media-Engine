@@ -12,4 +12,11 @@ if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
 
-module.exports = { prisma };
+const { ensureDatabaseReady: connectWithRetry } = require("./ensure-ready");
+
+/** @param {object} [options] */
+async function ensureDatabaseReady(options) {
+  return connectWithRetry(prisma, options);
+}
+
+module.exports = { prisma, ensureDatabaseReady };

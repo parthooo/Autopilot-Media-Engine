@@ -183,6 +183,18 @@ If build fails with `@prisma/client did not initialize`, ensure latest code is p
 
 After updating `.env`, run **Run Ingest** on the dashboard or `npm run worker -- ingest-all`.
 
+### GitHub Actions fails with "Can't reach database server"
+
+Neon **free tier suspends** the database after ~5 minutes of inactivity. The first GitHub Actions request may fail while Neon wakes up.
+
+**Fix (already in code):** the worker retries for up to 30 seconds automatically.
+
+**If it still fails:**
+1. Open [Neon dashboard](https://console.neon.tech) — confirm project is active
+2. Re-copy the connection string into GitHub secret `DATABASE_URL`
+3. Prefer Neon's **pooled** connection string (host contains `-pooler`)
+4. Re-run the workflow — second attempt often succeeds after Neon is warm
+
 ---
 
 ## 7. What happens next (roadmap)
