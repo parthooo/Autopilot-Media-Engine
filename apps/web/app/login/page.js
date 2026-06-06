@@ -37,16 +37,13 @@ function LoginForm() {
 
   return (
     <div className="login-panel panel">
-      <div className="panel-header">Autopilot Media Engine</div>
-      <div style={{ padding: "1.25rem" }}>
-        <p className="muted" style={{ marginBottom: "1rem" }}>
-          Enter your site password to continue.
-        </p>
+      <div className="login-brand">
+        <h1 className="login-title">Autopilot Media Engine</h1>
+        <p className="login-subtitle">Enter your site password to continue.</p>
+      </div>
+      <div className="login-body">
         <form onSubmit={handleSubmit}>
-          <label
-            htmlFor="password"
-            style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}
-          >
+          <label htmlFor="password" className="login-label">
             Password
           </label>
           <input
@@ -59,20 +56,11 @@ function LoginForm() {
             required
             autoFocus
           />
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ marginTop: "1rem", width: "100%" }}
-            disabled={loading}
-          >
+          <button type="submit" className="btn btn-primary login-submit" disabled={loading}>
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
-        {error && (
-          <p className="meta-line" style={{ marginTop: "1rem", color: "var(--color-danger)" }}>
-            {error}
-          </p>
-        )}
+        {error && <p className="login-error">{error}</p>}
       </div>
     </div>
   );
@@ -81,7 +69,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="login-page">
-      <Suspense fallback={<div className="login-panel panel">Loading…</div>}>
+      <Suspense fallback={<div className="login-panel panel login-loading">Loading…</div>}>
         <LoginForm />
       </Suspense>
     </div>

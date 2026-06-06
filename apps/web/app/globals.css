@@ -669,7 +669,58 @@ tbody tr:hover .col-sticky {
 }
 
 .login-panel {
-  width: min(100%, 22rem);
+  width: min(100%, 24rem);
+}
+
+.login-brand {
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+  border-bottom: 1px solid var(--color-rule);
+  text-align: center;
+}
+
+.login-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  color: var(--color-ink);
+  margin-bottom: var(--space-3xs);
+}
+
+.login-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  line-height: 1.45;
+}
+
+.login-body {
+  padding: var(--space-md);
+}
+
+.login-label {
+  display: block;
+  margin-bottom: var(--space-3xs);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+
+.login-submit {
+  margin-top: var(--space-sm);
+  width: 100%;
+}
+
+.login-error {
+  margin-top: var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+}
+
+.login-loading {
+  padding: var(--space-md);
+  text-align: center;
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
 }
 
 .login-input {
