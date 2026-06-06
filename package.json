@@ -8,8 +8,9 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "npm run db:generate",
     "dev": "npm run dev -w @ame/web",
-    "build": "npm run build -w @ame/web",
+    "build": "npm run db:generate && npm run build -w @ame/web",
     "worker": "node apps/worker/src/index.js",
     "db:generate": "npm run generate -w @ame/database",
     "db:migrate": "npm run migrate -w @ame/database",
