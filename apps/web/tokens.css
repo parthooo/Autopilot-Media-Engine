@@ -1,0 +1,39 @@
+:root {
+  --color-paper: oklch(16% 0.012 250);
+  --color-paper-2: oklch(20% 0.012 250);
+  --color-paper-3: oklch(24% 0.014 250);
+  --color-rule: oklch(32% 0.018 250);
+  --color-ink: oklch(91% 0.008 250);
+  --color-ink-2: oklch(62% 0.015 250);
+  --color-accent: oklch(69% 0.18 254);
+  --color-accent-hover: oklch(75% 0.16 254);
+  --color-accent-ink: oklch(16% 0.012 250);
+  --color-focus: oklch(73% 0.19 254);
+  --color-success: oklch(68% 0.14 155);
+  --color-warning: oklch(72% 0.12 75);
+  --color-danger: oklch(65% 0.14 25);
+
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-body: var(--font-ibm-plex-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  --dur-short: 120ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}

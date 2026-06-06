@@ -34,7 +34,7 @@ export default async function TrendDetailPage({ params }) {
         title={topic.title}
         subtitle={`${topic.category || "uncategorized"} · ${topic.signalCount} signals`}
         back={
-          <p style={{ marginBottom: "0.75rem" }}>
+          <p className="back-nav">
             <Link href="/trends" className="back-link">
               ← Trends
             </Link>
@@ -43,72 +43,80 @@ export default async function TrendDetailPage({ params }) {
       />
 
       {topic.opportunity && (
-        <div className="panel" style={{ marginBottom: "1.5rem" }}>
+        <section className="panel panel-spaced">
           <div className="score-hero">
             <ScoreBadge score={topic.opportunity.opportunityScore} />
-            <span className="score-hero-label">opportunity score</span>
-            <Link href={`/opportunities/${topic.opportunity.id}`}>
-              View details →
-            </Link>
+            <span className="score-hero-label">Opportunity score</span>
+            <Link href={`/opportunities/${topic.opportunity.id}`}>View details</Link>
           </div>
-        </div>
+        </section>
       )}
 
-      <div className="panel">
-        <div className="panel-header">Recent metrics</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th>Rank</th>
-              <th>Volume</th>
-              <th>Engagement</th>
-              <th>Captured</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topic.topicMetrics.map((m) => (
-              <tr key={m.id}>
-                <td>{m.source.name}</td>
-                <td>{m.rankPosition ?? "—"}</td>
-                <td>{m.volumeEstimate ?? "—"}</td>
-                <td>{m.engagementScore?.toFixed(1) ?? "—"}</td>
-                <td className="muted">{new Date(m.capturedAt).toLocaleString()}</td>
+      <section className="panel panel-spaced">
+        <div className="panel-title">
+          Recent metrics
+          <span className="panel-count">{topic.topicMetrics.length}</span>
+        </div>
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Rank</th>
+                <th>Volume</th>
+                <th>Engagement</th>
+                <th>Captured</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {topic.topicMetrics.map((m) => (
+                <tr key={m.id}>
+                  <td className="col-sticky">{m.source.name}</td>
+                  <td className="num">{m.rankPosition ?? "—"}</td>
+                  <td className="num">{m.volumeEstimate ?? "—"}</td>
+                  <td className="num">{m.engagementScore?.toFixed(1) ?? "—"}</td>
+                  <td className="muted">{new Date(m.capturedAt).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-      <div className="panel">
-        <div className="panel-header">Raw signals</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th>Title</th>
-              <th>Discovered</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topic.rawSignals.map((s) => (
-              <tr key={s.id}>
-                <td>{s.source.name}</td>
-                <td>
-                  {s.url ? (
-                    <a href={s.url} target="_blank" rel="noopener noreferrer">
-                      {s.title}
-                    </a>
-                  ) : (
-                    s.title
-                  )}
-                </td>
-                <td className="muted">{new Date(s.discoveredAt).toLocaleString()}</td>
+      <section className="panel">
+        <div className="panel-title">
+          Raw signals
+          <span className="panel-count">{topic.rawSignals.length}</span>
+        </div>
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Source</th>
+                <th>Title</th>
+                <th>Discovered</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {topic.rawSignals.map((s) => (
+                <tr key={s.id}>
+                  <td className="col-sticky">{s.source.name}</td>
+                  <td>
+                    {s.url ? (
+                      <a href={s.url} target="_blank" rel="noopener noreferrer">
+                        {s.title}
+                      </a>
+                    ) : (
+                      s.title
+                    )}
+                  </td>
+                  <td className="muted">{new Date(s.discoveredAt).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }

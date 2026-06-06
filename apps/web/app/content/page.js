@@ -1,15 +1,30 @@
 import { prisma } from "../../lib/db";
 import { PageHeader } from "../../components/page-header";
 import { StatusBadge } from "../../components/status-badge";
+import { Pagination } from "../../components/pagination";
+import {
+  PAGE_SIZE,
+  clampPage,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "../../lib/pagination";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function ContentPage() {
+export default async function ContentPage({ searchParams }) {
+  const params = await searchParams;
+  const totalCount = await prisma.contentAsset.count();
+  const pages = totalPages(totalCount);
+  const page = clampPage(parsePage(params.page), pages);
+  const skip = pageSkip(page);
+
   const [assets, winner] = await Promise.all([
     prisma.contentAsset.findMany({
       orderBy: { createdAt: "desc" },
-      take: 50,
+      skip,
+      take: PAGE_SIZE,
       include: {
         opportunity: { include: { topic: { select: { title: true } } } },
       },
@@ -23,57 +38,64 @@ export default async function ContentPage() {
   return (
     <div>
       <PageHeader
-        title="Content Factory"
-        subtitle="AI-generated articles for your approved niche"
+        title="Content"
+        subtitle={`${totalCount.toLocaleString()} assets · ${PAGE_SIZE} per page`}
       />
 
       {winner && (
         <p className="meta-line">
-          Active niche: <strong>{winner.topic.title}</strong> — run{" "}
-          <strong>Generate Articles</strong> on Overview to create more
+          Active niche: {winner.topic.title} — run generate on Overview for more
         </p>
       )}
 
-      <div className="panel">
-        <div className="panel-header">{assets.length} content assets</div>
-        {assets.length === 0 ? (
+      <section className="panel">
+        {totalCount === 0 ? (
           <div className="empty-state">
-            No content yet. Click <strong>Generate Articles</strong> or run{" "}
-            <code>npm run worker -- generate-content</code>
+            No content yet. Run <code>npm run worker -- generate-content</code>
           </div>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Niche</th>
-                <th>Words</th>
-                <th>Status</th>
-                <th>Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {assets.map((asset) => (
-                <tr key={asset.id}>
-                  <td>
-                    <Link href={`/content/${asset.id}`}>{asset.title}</Link>
-                  </td>
-                  <td className="muted">{asset.assetType}</td>
-                  <td className="muted">{asset.opportunity.topic.title}</td>
-                  <td>{asset.metadata?.wordCount ?? "—"}</td>
-                  <td>
-                    <StatusBadge status={asset.status} />
-                  </td>
-                  <td className="muted">
-                    {new Date(asset.createdAt).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <>
+            <div className="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Niche</th>
+                    <th>Words</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assets.map((asset) => (
+                    <tr key={asset.id}>
+                      <td className="col-sticky">
+                        <Link href={`/content/${asset.id}`}>{asset.title}</Link>
+                      </td>
+                      <td className="muted">{asset.assetType}</td>
+                      <td className="muted">{asset.opportunity.topic.title}</td>
+                      <td className="num">{asset.metadata?.wordCount ?? "—"}</td>
+                      <td>
+                        <StatusBadge status={asset.status} />
+                      </td>
+                      <td className="muted">
+                        {new Date(asset.createdAt).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Pagination
+              basePath="/content"
+              page={page}
+              totalPages={pages}
+              totalCount={totalCount}
+            />
+          </>
         )}
-      </div>
+      </section>
     </div>
   );
 }

@@ -9,7 +9,7 @@ async function fetchYouTube(config = {}) {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "YouTube requires YOUTUBE_API_KEY. Enable YouTube Data API v3 in Google Cloud Console and add the key to .env"
+      "YouTube requires YOUTUBE_API_KEY. Enable YouTube Data API v3 in Google Cloud Console, then add the key to GitHub Actions secrets (for scheduled runs) and Vercel env vars (for dashboard triggers)."
     );
   }
 

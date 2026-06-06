@@ -4,14 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const STEPS = [
-  { step: "ingest", label: "Run Ingest", desc: "Fetch trends from all sources" },
-  { step: "score", label: "Run Score", desc: "Calculate opportunity scores" },
-  { step: "auto-select", label: "AI Pick Winner", desc: "Gemini selects & approves ONE niche" },
-  { step: "generate-content", label: "Generate Articles", desc: "Write 5 SEO articles for AI winner" },
-  { step: "full", label: "Full Pipeline", desc: "Ingest → Score → AI select → articles" },
+  { step: "ingest", label: "Run ingest", desc: "Fetch trends from all sources" },
+  { step: "score", label: "Run score", desc: "Calculate opportunity scores" },
+  { step: "auto-select", label: "AI pick", desc: "Gemini selects and approves one niche" },
+  { step: "generate-content", label: "Generate", desc: "Write SEO articles for AI winner" },
+  { step: "full", label: "Full pipeline", desc: "Ingest, score, AI select, articles" },
 ];
 
-export function PipelineControls() {
+export function PipelineControls({ compact = false }) {
   const router = useRouter();
   const [loading, setLoading] = useState(null);
   const [message, setMessage] = useState(null);
@@ -32,7 +32,7 @@ export function PipelineControls() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Pipeline failed");
 
-      setMessage(data.data?.message || `Completed: ${step} (${data.data?.mode})`);
+      setMessage(data.data?.message || `Completed: ${step}`);
       router.refresh();
     } catch (err) {
       setError(err.message);
@@ -42,18 +42,20 @@ export function PipelineControls() {
   }
 
   return (
-    <div className="panel" style={{ marginBottom: "1.5rem" }}>
-      <div className="panel-header">Pipeline controls</div>
-      <div style={{ padding: "1.25rem" }}>
-        <p className="muted" style={{ marginBottom: "1rem" }}>
-          Click to run manually, or let GitHub Actions run every 6 hours automatically.
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+    <section className={`panel${compact ? "" : " panel-spaced"}`}>
+      <div className="panel-title">Pipeline</div>
+      <div className="panel-body">
+        {!compact && (
+          <p className="muted u-mb-sm">Run manually or let GitHub Actions run every 6 hours.</p>
+        )}
+        <div className="btn-row">
           {STEPS.map((s) => (
             <button
               key={s.step}
+              type="button"
               className={`btn ${s.step === "full" ? "btn-primary" : ""}`}
               disabled={loading !== null}
+              data-state={loading === s.step ? "loading" : undefined}
               onClick={() => runStep(s.step)}
               title={s.desc}
             >
@@ -61,17 +63,9 @@ export function PipelineControls() {
             </button>
           ))}
         </div>
-        {message && (
-          <p className="meta-line" style={{ marginTop: "1rem", color: "var(--color-success)" }}>
-            {message}
-          </p>
-        )}
-        {error && (
-          <p className="meta-line" style={{ marginTop: "1rem", color: "var(--color-danger)" }}>
-            {error}
-          </p>
-        )}
+        {message && <p className="meta-line message-success u-mt-sm">{message}</p>}
+        {error && <p className="meta-line message-error u-mt-sm">{error}</p>}
       </div>
-    </div>
+    </section>
   );
 }

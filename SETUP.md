@@ -144,6 +144,7 @@ Falls back to rule-based selection (evergreen + monetization scores). Still auto
 |----------|----------|
 | `DATABASE_URL` | Yes |
 | `GEMINI_API_KEY` | Yes (for AI buttons on Vercel) |
+| `YOUTUBE_API_KEY` | Yes (if ingest runs inline on Vercel; also required in GitHub Secrets) |
 | `REDDIT_CLIENT_ID` | Yes (if running ingest from Vercel) |
 | `REDDIT_CLIENT_SECRET` | Yes (if running ingest from Vercel) |
 | `REDDIT_USER_AGENT` | Yes (if running ingest from Vercel) |

@@ -56,46 +56,8 @@ export default async function OverviewPage() {
     <div>
       <PageHeader
         title="Overview"
-        subtitle="Fully automated trend discovery — AI picks your niche"
+        subtitle="Trend discovery and opportunity scoring at a glance"
       />
-
-      {stats.aiWinner ? (
-        <div className="panel" style={{ marginBottom: "1.5rem" }}>
-          <div className="panel-header">
-            AI-selected winner · {stats.aiWinner.analysis?.selectionMethod || "auto"}
-          </div>
-          <div style={{ padding: "1.25rem" }}>
-            <div className="score-hero" style={{ padding: 0, marginBottom: "0.75rem" }}>
-              <ScoreBadge score={stats.aiWinner.opportunityScore} />
-              <Link href={`/opportunities/${stats.aiWinner.id}`}>
-                {stats.aiWinner.topic.title}
-              </Link>
-            </div>
-            {stats.aiWinner.analysis?.aiReasoning && (
-              <p className="muted" style={{ marginBottom: "0.75rem" }}>
-                {stats.aiWinner.analysis.aiReasoning}
-              </p>
-            )}
-            {stats.aiWinner.analysis?.contentStrategy?.siteAngle && (
-              <p>
-                <strong>Site angle:</strong>{" "}
-                {stats.aiWinner.analysis.contentStrategy.siteAngle}
-              </p>
-            )}
-            <p className="meta-line" style={{ marginTop: "0.75rem", marginBottom: 0 }}>
-              Only ONE niche is active at a time. Pipeline re-evaluates every 6 hours.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="panel" style={{ marginBottom: "1.5rem" }}>
-          <div className="panel-header">No AI winner yet</div>
-          <div className="empty-state">
-            Run <strong>Full Pipeline</strong> below — AI will analyze trends and pick ONE
-            niche automatically. No manual review needed.
-          </div>
-        </div>
-      )}
 
       <PipelineControls />
 
@@ -126,41 +88,76 @@ export default async function OverviewPage() {
         </p>
       )}
 
-      <div className="panel">
-        <div className="panel-header">Top opportunities</div>
+      {stats.aiWinner ? (
+        <section className="panel panel-spaced">
+          <div className="panel-title">Active niche</div>
+          <div className="panel-body">
+            <div className="score-hero score-hero--flush">
+              <ScoreBadge score={stats.aiWinner.opportunityScore} />
+              <Link href={`/opportunities/${stats.aiWinner.id}`}>
+                {stats.aiWinner.topic.title}
+              </Link>
+            </div>
+            {stats.aiWinner.analysis?.aiReasoning && (
+              <p className="muted u-mt-xs">{stats.aiWinner.analysis.aiReasoning}</p>
+            )}
+            {stats.aiWinner.analysis?.contentStrategy?.siteAngle && (
+              <p className="u-mt-xs">
+                <span className="section-label">Site angle</span>
+                {stats.aiWinner.analysis.contentStrategy.siteAngle}
+              </p>
+            )}
+          </div>
+        </section>
+      ) : (
+        <section className="panel panel-spaced">
+          <div className="panel-title">Active niche</div>
+          <div className="empty-state">
+            Run full pipeline — AI picks one niche automatically.
+          </div>
+        </section>
+      )}
+
+      <section className="panel">
+        <div className="panel-title">
+          Top opportunities
+          <span className="panel-count">{stats.topOpportunities.length}</span>
+        </div>
         {stats.topOpportunities.length === 0 ? (
           <div className="empty-state">
             Run <code>npm run worker -- pipeline</code> to discover and score trends.
           </div>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Topic</th>
-                <th>Category</th>
-                <th>Score</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stats.topOpportunities.map((opp) => (
-                <tr key={opp.id}>
-                  <td>
-                    <Link href={`/opportunities/${opp.id}`}>{opp.topic.title}</Link>
-                  </td>
-                  <td className="muted">{opp.topic.category || "—"}</td>
-                  <td>
-                    <ScoreBadge score={opp.opportunityScore} />
-                  </td>
-                  <td>
-                    <StatusBadge status={opp.status} />
-                  </td>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Category</th>
+                  <th>Score</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {stats.topOpportunities.map((opp) => (
+                  <tr key={opp.id}>
+                    <td className="col-sticky">
+                      <Link href={`/opportunities/${opp.id}`}>{opp.topic.title}</Link>
+                    </td>
+                    <td className="muted">{opp.topic.category || "—"}</td>
+                    <td>
+                      <ScoreBadge score={opp.opportunityScore} />
+                    </td>
+                    <td>
+                      <StatusBadge status={opp.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }
