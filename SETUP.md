@@ -131,7 +131,8 @@ Falls back to rule-based selection (evergreen + monetization scores). Still auto
 ## 5. Deploy dashboard to Vercel
 
 1. Import GitHub repo on [vercel.com](https://vercel.com)
-2. **Root Directory:** leave as `.` (repo root) — `vercel.json` handles the rest
+2. **Root Directory:** `apps/web` (required for this monorepo)
+3. Enable **"Include source files outside of the Root Directory"** if offered
 3. **Environment variables** (Settings → Environment Variables):
 
 | Variable | Required |
