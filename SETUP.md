@@ -131,10 +131,20 @@ Falls back to rule-based selection (evergreen + monetization scores). Still auto
 ## 5. Deploy dashboard to Vercel
 
 1. Import GitHub repo on [vercel.com](https://vercel.com)
-2. Root directory: `apps/web`
-3. Environment variables: `DATABASE_URL`, `GEMINI_API_KEY`, `ADMIN_API_KEY`
-4. Optional: `GITHUB_TOKEN`, `GITHUB_REPOSITORY` for manual buttons
+2. **Root Directory:** `apps/web` (required for this monorepo)
+3. Enable **"Include source files outside of the Root Directory"** if offered
+3. **Environment variables** (Settings → Environment Variables):
+
+| Variable | Required |
+|----------|----------|
+| `DATABASE_URL` | Yes |
+| `GEMINI_API_KEY` | Yes (for AI buttons on Vercel) |
+| `REDDIT_USER_AGENT` | Yes (if running ingest from Vercel) |
+
+4. Optional: `GITHUB_TOKEN` + `GITHUB_REPOSITORY` to trigger GitHub Actions from buttons
 5. Deploy
+
+If build fails with `@prisma/client did not initialize`, ensure latest code is pushed (includes `postinstall` prisma generate).
 
 ---
 
