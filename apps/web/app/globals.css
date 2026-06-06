@@ -740,8 +740,128 @@ tbody tr:hover .col-sticky {
   border-color: var(--color-accent);
 }
 
-.sidebar-logout {
+.sidebar-footer {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+}
+
+.sidebar-guide {
+  margin-bottom: var(--space-3xs);
+}
+
+.sidebar-logout {
   width: 100%;
   justify-content: center;
+}
+
+.guide-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 48rem;
+}
+
+.guide-section {
+  min-width: 0;
+}
+
+.guide-body {
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  font-size: var(--text-md);
+  line-height: 1.6;
+}
+
+.guide-body p + p,
+.guide-body p + ul,
+.guide-body p + ol,
+.guide-body ul + p,
+.guide-body ol + p {
+  margin-top: var(--space-xs);
+}
+
+.guide-h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-2xs);
+}
+
+.guide-h3:not(:first-child) {
+  margin-top: var(--space-sm);
+}
+
+.guide-steps,
+.guide-list {
+  padding-left: 1.25rem;
+  color: var(--color-ink);
+}
+
+.guide-steps li + li,
+.guide-list li + li {
+  margin-top: var(--space-2xs);
+}
+
+.guide-dl {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.guide-dl-row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: var(--space-sm);
+  align-items: baseline;
+}
+
+.guide-dl-row dt {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.guide-dl-row dd {
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  margin: 0;
+}
+
+.guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.guide-table th,
+.guide-table td {
+  padding: var(--space-2xs) var(--space-xs);
+  text-align: left;
+  border-bottom: 1px solid var(--color-rule);
+  vertical-align: top;
+}
+
+.guide-table th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-ink);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.guide-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 640px) {
+  .guide-dl-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-3xs);
+  }
 }
