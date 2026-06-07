@@ -2,6 +2,7 @@ const { prisma } = require("@ame/database");
 const {
   selectWinnerWithAI,
   selectWinnerWithRules,
+  normalizeWinnerSelection,
   DEFAULT_MODEL,
 } = require("@ame/ai");
 const { ingestAll } = require("./ingest");
@@ -66,6 +67,8 @@ async function autoSelectWinner() {
   if (!winner) {
     return { success: false, message: "AI returned invalid winner ID" };
   }
+
+  selection = normalizeWinnerSelection(selection, winner.topic.title);
 
   const candidateIds = candidates.map((c) => c.id);
   const now = new Date();
@@ -143,6 +146,7 @@ async function autoSelectWinner() {
     winnerScore: winner.opportunityScore,
     reasoning: selection.reasoning,
     selectionMethod: usedAI ? "gemini" : "rules",
+    videoStrategyNormalized: selection.videoStrategyNormalized === true,
     candidatesEvaluated: candidates.length,
   };
 }

@@ -1,3 +1,5 @@
+require("./load-root-env");
+
 const { PrismaClient } = require("@prisma/client");
 
 const globalForPrisma = globalThis;

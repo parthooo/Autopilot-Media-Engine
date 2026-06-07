@@ -28,6 +28,7 @@ See also: [ARCHITECTURE.md](./ARCHITECTURE.md) (worker pipeline), [SETUP.md](./S
 | **Full pipeline** | Ingest → score → pick → generate | `pipeline.yml` — every 6h | **Full pipeline** | `npm run worker -- pipeline` | `pipeline.yml` → Run workflow |
 | **Export content** | Write approved assets to `content/` | — (local only) | **Export to disk** (local dev) | `npm run worker -- export-content` | — (no CI; filesystem) |
 | **Approve / reject opportunity** | Human status change | AI auto-approves one winner | Buttons on opportunity detail | — | — |
+| **Backfill winner video strategy** | Patch missing pillar + 5 Shorts on approved analysis | — (on-demand repair) | — | `npm run worker -- backfill-winner-strategy` | — |
 
 ### Planned (must follow same manual parity when built)
 
