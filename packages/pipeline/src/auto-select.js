@@ -97,7 +97,12 @@ async function autoSelectWinner() {
           confidence: selection.confidence,
         },
         seoKeywords: { primary: selection.seoKeywords || [], longTail: [] },
-        youtubeIdeas: { videos: [] },
+        youtubeIdeas: selection.youtubeIdeas || {
+          videos: selection.contentStrategy?.pillarVideo
+            ? [selection.contentStrategy.pillarVideo]
+            : [],
+          shorts: selection.contentStrategy?.shortsCluster || [],
+        },
         affiliatePotential: {
           strategy: selection.contentStrategy?.monetization || "AdSense + affiliates",
         },
@@ -116,6 +121,12 @@ async function autoSelectWinner() {
           confidence: selection.confidence,
         },
         seoKeywords: { primary: selection.seoKeywords || [], longTail: [] },
+        youtubeIdeas: selection.youtubeIdeas || {
+          videos: selection.contentStrategy?.pillarVideo
+            ? [selection.contentStrategy.pillarVideo]
+            : [],
+          shorts: selection.contentStrategy?.shortsCluster || [],
+        },
         contentStrategy: selection.contentStrategy || {},
         aiReasoning: selection.reasoning,
         selectionMethod: usedAI ? "gemini" : "rules",

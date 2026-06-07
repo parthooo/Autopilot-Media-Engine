@@ -31,14 +31,15 @@ Open http://localhost:3000 — the **AI-selected winner** appears on Overview.
 
 ## 2. GitHub Actions (auto-run every 6 hours)
 
-Workflows live in `.github/workflows/`:
+Workflows live in `.github/workflows/`. **Every scheduled workflow also supports manual run** (`workflow_dispatch`) and has a matching dashboard button. See [AUTOMATION.md](./AUTOMATION.md).
 
-| File | Schedule | What it does |
-|------|----------|--------------|
-| `pipeline.yml` | Every 6h + manual | **Full automation** — ingest, score, AI pick winner |
-| `ingest.yml` | Every 6h + manual | Ingest only |
-| `score.yml` | 30min after ingest | Score only |
-| `auto-select.yml` | Manual only | AI pick winner only |
+| File | Schedule | Manual — dashboard | Manual — CLI |
+|------|----------|-------------------|--------------|
+| `pipeline.yml` | Every 6h | Full pipeline | `npm run worker -- pipeline` |
+| `ingest.yml` | Every 6h | Run ingest | `npm run worker -- ingest-all` |
+| `score.yml` | 30min after ingest | Run score | `npm run worker -- score` |
+| `auto-select.yml` | — (in pipeline) | AI pick | `npm run worker -- auto-select` |
+| `generate-content.yml` | — (in pipeline) | Generate YouTube / articles / all | `npm run worker -- generate-content` |
 
 ### Push repo to GitHub
 
@@ -199,9 +200,22 @@ Neon **free tier suspends** the database after ~5 minutes of inactivity. The fir
 
 ## 7. What happens next (roadmap)
 
-The AI winner includes a **content strategy** (5 article titles). Next phases will:
+The AI winner includes a **YouTube content plan** (1 pillar + 5 Shorts) and **article cluster** (for later).
 
-- **Phase 4:** Auto-generate those articles (Gemini)
-- **Phase 5:** Publish to your first SEO site
+Each `generate-content` run produces:
 
-You are currently at: **automated discovery + AI niche selection**.
+| Output | Count | Cost to publish |
+|--------|-------|-----------------|
+| Pillar video script | 1 | $0 — upload to YouTube |
+| Shorts scripts | 5 | $0 — upload to YouTube |
+| SEO articles | 5 | Deferred — needs domain |
+
+Commands:
+
+```bash
+npm run worker -- generate-content              # all assets (YouTube first)
+npm run worker -- generate-content --youtube-only
+npm run worker -- generate-content --export     # write to content/{id}/youtube|shorts|articles/
+```
+
+You are currently at: **automated discovery + AI niche selection + YouTube script generation**.

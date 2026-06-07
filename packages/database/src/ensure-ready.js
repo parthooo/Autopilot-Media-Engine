@@ -22,7 +22,9 @@ async function ensureDatabaseReady(prisma, options = {}) {
         message.includes("Can't reach database server") ||
         message.includes("Connection timed out") ||
         message.includes("ECONNREFUSED") ||
-        message.includes("connection terminated");
+        message.includes("connection terminated") ||
+        message.includes("kind: Closed") ||
+        message.includes("Connection closed");
 
       if (!retryable || attempt === maxAttempts) {
         throw error;

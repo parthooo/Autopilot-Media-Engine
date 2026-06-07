@@ -2,6 +2,16 @@ name: Generate Content
 
 on:
   workflow_dispatch:
+    inputs:
+      variant:
+        description: "Content variant"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - youtube-only
+          - articles-only
 
 jobs:
   generate:
@@ -26,8 +36,13 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Generate articles
-        run: npm run worker -- generate-content
+      - name: Generate content
+        run: |
+          VARIANT="${{ github.event.inputs.variant || 'all' }}"
+          FLAGS=""
+          if [ "$VARIANT" = "youtube-only" ]; then FLAGS="--youtube-only"; fi
+          if [ "$VARIANT" = "articles-only" ]; then FLAGS="--articles-only"; fi
+          npm run worker -- generate-content $FLAGS
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

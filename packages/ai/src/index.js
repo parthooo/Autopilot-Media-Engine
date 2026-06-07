@@ -1,6 +1,10 @@
 const { getModel, generateJson, DEFAULT_MODEL } = require("./client");
 const { selectWinnerWithAI, selectWinnerWithRules } = require("./select-winner");
 const { generateArticle } = require("./generate-article");
+const {
+  generateYouTubeScript,
+  generateShortsScript,
+} = require("./generate-youtube-script");
 
 module.exports = {
   getModel,
@@ -9,4 +13,6 @@ module.exports = {
   selectWinnerWithAI,
   selectWinnerWithRules,
   generateArticle,
+  generateYouTubeScript,
+  generateShortsScript,
 };

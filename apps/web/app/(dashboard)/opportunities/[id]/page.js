@@ -109,9 +109,38 @@ export default async function OpportunityDetailPage({ params }) {
             {opportunity.analysis.aiReasoning && (
               <p>{opportunity.analysis.aiReasoning}</p>
             )}
+            {opportunity.analysis.contentStrategy?.channelAngle && (
+              <div>
+                <span className="section-label">YouTube channel angle</span>
+                <p>{opportunity.analysis.contentStrategy.channelAngle}</p>
+              </div>
+            )}
+            {opportunity.analysis.contentStrategy?.pillarVideo && (
+              <div>
+                <span className="section-label">Pillar video</span>
+                <p>
+                  <strong>{opportunity.analysis.contentStrategy.pillarVideo.title}</strong>
+                  {opportunity.analysis.contentStrategy.pillarVideo.angle && (
+                    <> — {opportunity.analysis.contentStrategy.pillarVideo.angle}</>
+                  )}
+                </p>
+              </div>
+            )}
+            {opportunity.analysis.contentStrategy?.shortsCluster?.length > 0 && (
+              <div>
+                <span className="section-label">Shorts cluster</span>
+                <ul className="detail-list">
+                  {opportunity.analysis.contentStrategy.shortsCluster.map((short) => (
+                    <li key={typeof short === "string" ? short : short.title}>
+                      {typeof short === "string" ? short : short.title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {opportunity.analysis.contentStrategy?.articleCluster && (
               <div>
-                <span className="section-label">Suggested articles</span>
+                <span className="section-label">Article cluster (publish later)</span>
                 <ul className="detail-list">
                   {opportunity.analysis.contentStrategy.articleCluster.map((title) => (
                     <li key={title}>{title}</li>

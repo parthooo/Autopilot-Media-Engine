@@ -37,8 +37,10 @@ Also read `AGENTS.md` at the repo root for the agent workflow checklist.
 ## Hard constraints (never violate without explicit approval)
 
 - Platform first, revenue assets second — logic lives here, not in site repos
-- MVP = discovery + scoring only (HN, Reddit, Google Trends) — no AI/publishing until phase gates pass
-- $0 infra default: Vercel + Neon + GitHub Actions cron
+- **$0 out-of-pocket for revenue assets** — no paid domains/hosting as a prerequisite; operator funds those only after revenue
+- **YouTube-first monetization** — prioritize YouTube scripts + publish over SEO site launch; articles run in parallel as prep, not first revenue
+- **Automation + manual parity** — every automated job needs dashboard button + CLI + GitHub workflow_dispatch; see `AUTOMATION.md`
+- $0 platform infra default: Vercel + Neon + GitHub Actions cron + Gemini free tier
 - Solo operator: no premature Redis, BullMQ, microservices, or multi-user auth
 - Service boundaries in ARCHITECTURE.md — adapters don't write DB; worker orchestrates
 

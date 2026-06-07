@@ -20,12 +20,14 @@ export default function GuidePage() {
             <p>
               <strong>Autopilot Media Engine</strong> is your automated trend-to-content
               pipeline. It watches the internet for rising topics, scores them as business
-              opportunities, lets AI pick <em>one winning niche</em>, and generates SEO
-              articles you can later publish for passive income.
+              opportunities, lets AI pick <em>one winning niche</em>, and generates{" "}
+              <strong>YouTube scripts + Shorts</strong> (primary, $0 to publish) plus SEO
+              articles (for later, when you have budget for a domain).
             </p>
             <p className="muted">
-              This dashboard is your control room — not the public money-making site. The
-              revenue site comes in Phase 5 (publishing).
+              This dashboard is your control room — not your YouTube channel or SEO site.
+              Upload scripts to YouTube Studio when ready; deploy articles later when you
+              can afford a domain.
             </p>
           </div>
         </section>
@@ -47,12 +49,15 @@ export default function GuidePage() {
                 <em>one</em> niche; others are rejected or archived
               </li>
               <li>
-                <strong>Generate articles</strong> — write up to 5 SEO articles for the
-                approved winner
+                <strong>Generate content</strong> — 1 pillar video script + 5 Shorts + 5
+                SEO articles for the approved winner (YouTube first)
               </li>
               <li>
-                <strong>Publish</strong> (coming next) — deploy articles to a real SEO
-                micro-site for AdSense and affiliate revenue
+                <strong>Upload to YouTube</strong> — record or TTS, then publish manually ($0)
+              </li>
+              <li>
+                <strong>Publish articles</strong> (later) — deploy to an SEO site when domain
+                budget exists
               </li>
             </ol>
             <p className="meta-line">
@@ -98,8 +103,8 @@ export default function GuidePage() {
                   <Link href="/content">Content</Link>
                 </dt>
                 <dd>
-                  AI-generated articles for the approved winner. Read previews, check word
-                  counts, and metadata before publishing.
+                  AI-generated scripts and articles for the approved winner. Filter by
+                  YouTube, Shorts, or Articles. Each script includes an upload checklist.
                 </dd>
               </div>
               <div className="guide-dl-row">
@@ -116,39 +121,71 @@ export default function GuidePage() {
         </section>
 
         <section className="panel guide-section">
-          <div className="panel-title">Pipeline buttons</div>
+          <div className="panel-title">Automatic vs manual</div>
+          <div className="guide-body">
+            <p>
+              <strong>Every automated step has a manual button.</strong> GitHub Actions runs
+              the pipeline every 6 hours while you&apos;re offline. When you&apos;re online,
+              use the same buttons on Overview, Ingestion, or Content — they run identical
+              code.
+            </p>
+            <ul className="guide-list">
+              <li>
+                <strong>Auto</strong> — scheduled crons (ingest, score, full pipeline)
+              </li>
+              <li>
+                <strong>Manual</strong> — dashboard buttons, CLI (<code>npm run worker -- …</code>
+                ), or GitHub Actions → Run workflow
+              </li>
+            </ul>
+            <p className="meta-line muted">
+              Full matrix: <code>AUTOMATION.md</code> in the repo root.
+            </p>
+          </div>
+        </section>
+
+        <section className="panel guide-section">
+          <div className="panel-title">Manual pipeline buttons</div>
           <div className="guide-body">
             <dl className="guide-dl">
               <div className="guide-dl-row">
                 <dt>Run ingest</dt>
-                <dd>Fetch new trends from all active sources only.</dd>
+                <dd>Fetch new trends from all active sources.</dd>
               </div>
               <div className="guide-dl-row">
                 <dt>Run score</dt>
-                <dd>Recalculate opportunity scores from existing topics.</dd>
+                <dd>Recalculate opportunity scores.</dd>
               </div>
               <div className="guide-dl-row">
                 <dt>AI pick</dt>
-                <dd>
-                  Gemini picks one winner, auto-approves it, archives the old winner, rejects
-                  other candidates.
-                </dd>
+                <dd>Gemini picks one winner and auto-approves it.</dd>
               </div>
               <div className="guide-dl-row">
-                <dt>Generate</dt>
-                <dd>Write SEO articles for the current approved niche (skips duplicates).</dd>
+                <dt>Generate YouTube</dt>
+                <dd>1 pillar script + 5 Shorts ($0 path).</dd>
+              </div>
+              <div className="guide-dl-row">
+                <dt>Generate articles</dt>
+                <dd>5 SEO articles only (for later, when domain budget exists).</dd>
+              </div>
+              <div className="guide-dl-row">
+                <dt>Generate all</dt>
+                <dd>YouTube + Shorts + articles in one run.</dd>
+              </div>
+              <div className="guide-dl-row">
+                <dt>Export to disk</dt>
+                <dd>
+                  Write scripts to <code>content/</code> folder — local dev only.
+                </dd>
               </div>
               <div className="guide-dl-row">
                 <dt>Full pipeline</dt>
-                <dd>
-                  Runs all four steps in order. <strong>Use this</strong> if you want
-                  everything refreshed in one go.
-                </dd>
+                <dd>Ingest → score → AI pick → generate all content.</dd>
               </div>
             </dl>
             <p className="meta-line muted">
-              On Vercel, buttons trigger GitHub Actions (not the server directly) so long
-              jobs don&apos;t time out.
+              Content page shows only generation buttons. Overview shows everything grouped
+              by stage. On Vercel, buttons dispatch GitHub Actions.
             </p>
           </div>
         </section>
@@ -160,7 +197,7 @@ export default function GuidePage() {
             <ul className="guide-list">
               <li>Open <Link href="/">Overview</Link> — check the active AI niche</li>
               <li>Glance at <Link href="/ingestion">Ingestion</Link> — all sources green?</li>
-              <li>Optional: skim new articles on <Link href="/content">Content</Link></li>
+              <li>Optional: skim new scripts on <Link href="/content">Content</Link></li>
             </ul>
 
             <h3 className="guide-h3">Weekly (optional)</h3>

@@ -52,12 +52,23 @@ See `ROADMAP.md` for the live checklist. At a high level:
 
 ## Hard rules
 
-1. **Zero-cost infra by default** — Vercel, Neon, GitHub Actions
-2. **Automation over manual work** — target ≤ 30 min/day operator time
-3. **Explainable scores** — store sub-scores, not just composite
-4. **Adapter pattern** — new sources/publishers = new adapter, not core rewrite
-5. **Human approval before publish** — never auto-publish content in MVP phases
-6. **No scope creep** — if it's not in the current phase gate, don't build it
+1. **$0 out-of-pocket by default** — platform infra (Vercel, Neon, GitHub Actions, Gemini free tier) only; **never assume the operator will pay for domains, hosting, or SaaS** unless they explicitly say so
+2. **YouTube-first revenue** — prioritize YouTube scripts + publish workflow over SEO site launch; articles are parallel prep, not the first monetization step
+3. **Automation + manual parity** — every cron/GitHub Action/unattended job **must** have a dashboard button, CLI command, and `workflow_dispatch`. See [AUTOMATION.md](./AUTOMATION.md). Never ship automation-only features.
+4. **Automation over manual work** — target ≤ 30 min/day operator time
+5. **Explainable scores** — store sub-scores, not just composite
+6. **Adapter pattern** — new sources/publishers = new adapter, not core rewrite
+7. **Human approval before publish** — never auto-publish content in MVP phases
+8. **No scope creep** — if it's not in the current phase gate, don't build it
+
+## Founder constraints (do not forget)
+
+The operator is in Bangladesh, solo, with **zero budget for revenue assets**:
+
+- **YouTube** = free channel, free hosting → **first path to money**
+- **SEO site** = needs paid domain (and often hosting beyond free tier for AdSense) → **defer until revenue or explicit budget**
+- **Both tracks share one pipeline** — discovery/scoring/analysis are not either/or; only content output and publishing differ
+- When suggesting "what's next", lead with YouTube script generation + export/upload, not "buy a domain and deploy a site"
 
 ## Document index
 
@@ -67,6 +78,7 @@ See `ROADMAP.md` for the live checklist. At a high level:
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design, APIs, deployment |
 | [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) | Tables, indexes, normalization |
 | [ROADMAP.md](./ROADMAP.md) | Phases, MVP, Week 1 plan, gates |
+| [AUTOMATION.md](./AUTOMATION.md) | Automation ↔ manual matrix — required when adding jobs |
 | [AGENTS.md](./AGENTS.md) | This file — agent entry point |
 
 ## Cursor rule

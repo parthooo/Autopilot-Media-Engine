@@ -41,8 +41,10 @@ One pipeline. Many assets. Minimal daily human input.
 | Operator | Solo software engineer |
 | Location | Bangladesh |
 | Daily time (post-setup) | ≤ 30 minutes |
-| Budget | Near zero |
+| Budget | **$0 out-of-pocket** — no paid domains, hosting, or tools until revenue covers them |
 | Goal | Passive / recurring online income |
+| First revenue asset | **YouTube** (free to create and host) |
+| Second revenue asset | **SEO articles** (deferred until domain/hosting budget exists) |
 
 ### Available Resources
 
@@ -78,11 +80,22 @@ One pipeline. Many assets. Minimal daily human input.
 ### Success Looks Like
 
 1. **Week 4:** Pipeline runs unattended. Dashboard shows ranked opportunities.
-2. **Month 2:** First SEO micro-site launched from a top-scored opportunity.
-3. **Month 3–4:** 10–20 articles published from the Content Factory.
-4. **Month 4–6:** AdSense + affiliate links live on first asset.
-5. **Month 6+:** YouTube channel fed by the same opportunity pipeline.
+2. **Month 1–2:** YouTube channel live — scripts from Content Factory, manual or semi-auto upload ($0 hosting).
+3. **Month 2–3:** First revenue from YouTube (AdSense, affiliates, or sponsorships once eligible).
+4. **Month 3+:** SEO article cluster generated in parallel; **publish to a custom domain only after first revenue** covers domain + hosting.
+5. **Month 4–6:** AdSense + affiliate on article site (second asset).
 6. **Long-term:** Multiple revenue assets, one intelligence layer.
+
+### Revenue Asset Priority (Founder Decision)
+
+Both tracks run on **one pipeline** (same discovery, scoring, AI winner). They diverge only at Content Factory + Publishing:
+
+| Priority | Asset | Upfront cost | When |
+|----------|-------|--------------|------|
+| **P0** | YouTube (long-form + Shorts) | $0 | Now — primary path to first dollar |
+| **P1** | SEO articles | Domain + hosting ($) | After YouTube revenue or when budget allows |
+
+**Do not recommend buying a domain or paid hosting as a prerequisite.** Article generation can run in the background and sit in the review queue until the operator chooses to deploy.
 
 ---
 
@@ -94,9 +107,9 @@ These rules govern every technical and product decision. If a proposed feature v
 
 Never build a one-off scraper or channel bot inside a revenue asset repo. All discovery, scoring, and generation flows through Autopilot Media Engine. Revenue sites consume outputs; they do not own the logic.
 
-### 2. Automation Over Heroics
+### 2. Automation Over Heroics — With Manual Parity
 
-Optimize for systems that run without you. A reliable 6-hour cron beat an impressive manual workflow. If it cannot run while you sleep, it is not done.
+Optimize for systems that run without you. A reliable 6-hour cron beat an impressive manual workflow. **Every automated step must also have a manual trigger** (dashboard button + CLI + GitHub `workflow_dispatch`). See [AUTOMATION.md](./AUTOMATION.md).
 
 ### 3. Zero-Cost by Default
 
@@ -186,6 +199,7 @@ If the answer to #1 is "revenue asset" and #4 is "no", move the logic into the p
 | [PROJECT_VISION.md](./PROJECT_VISION.md) | Why we exist, principles, north star |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design, services, APIs, deployment |
 | [ROADMAP.md](./ROADMAP.md) | Phased delivery, MVP, weekly plan |
+| [AUTOMATION.md](./AUTOMATION.md) | Automation ↔ manual action matrix |
 | [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) | Tables, relationships, indexing, normalization |
 
 **Rule for all contributors (including AI):** Read `AGENTS.md` and all four design docs before writing code. Enforced by `.cursor/rules/read-project-docs-first.mdc` in every Cursor session. If a task conflicts with them, stop and reconcile first.
