@@ -30,6 +30,7 @@ const {
   autoSelectWinner,
   generateContent,
   exportApprovedContent,
+  backfillWinnerStrategy,
   runFullPipeline,
 } = require("@ame/pipeline");
 const { prisma, ensureDatabaseReady } = require("@ame/database");
@@ -85,6 +86,15 @@ async function main() {
       break;
     }
 
+    case "backfill-winner-strategy": {
+      const dryRun = args.includes("--dry-run");
+      const opportunityId = getFlag("opportunity");
+      const result = await backfillWinnerStrategy({ dryRun, opportunityId });
+      console.log(JSON.stringify(result, null, 2));
+      if (!result.success) process.exit(1);
+      break;
+    }
+
     case "generate-content": {
       const exportMd = args.includes("--export");
       const youtubeOnly = args.includes("--youtube-only");
@@ -123,6 +133,8 @@ Commands:
   ingest-all               Ingest all active sources
   score                    Calculate opportunity scores
   auto-select              AI picks ONE winner and auto-approves
+  backfill-winner-strategy Patch missing pillar + Shorts on approved winners
+  backfill-winner-strategy --dry-run   Preview patches without writing
   generate-content              YouTube + Shorts + articles (YouTube first)
   generate-content --export     Generate and write to content/
   generate-content --youtube-only   Pillar + 5 Shorts only

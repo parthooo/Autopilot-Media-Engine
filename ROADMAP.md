@@ -185,7 +185,7 @@ At least one opportunity has analysis good enough that you would publish content
 - [x] Generation prompts in `packages/ai`
 - [x] Worker: `generate-content` (YouTube-first variants)
 - [x] Dashboard: content queue + manual generate buttons
-- [ ] Winner analysis always includes video strategy (pillar + Shorts cluster)
+- [x] Winner analysis always includes video strategy (pillar + Shorts cluster)
 
 ### Success Criteria
 

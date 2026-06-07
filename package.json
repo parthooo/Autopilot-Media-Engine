@@ -9,14 +9,17 @@
   ],
   "scripts": {
     "postinstall": "npm run db:generate",
-    "dev": "npm run dev -w @ame/web",
+    "dev": "dotenv -e .env -- npm run dev -w @ame/web",
     "build": "npm run db:generate && npm run build -w @ame/web",
     "worker": "node apps/worker/src/index.js",
-    "db:generate": "npm run generate -w @ame/database",
-    "db:migrate": "npm run migrate -w @ame/database",
-    "db:push": "npm run push -w @ame/database",
-    "db:seed": "npm run seed -w @ame/database",
-    "db:studio": "npm run studio -w @ame/database"
+    "db:generate": "dotenv -e .env -- npm run generate -w @ame/database",
+    "db:migrate": "dotenv -e .env -- npm run migrate -w @ame/database",
+    "db:push": "dotenv -e .env -- npm run push -w @ame/database",
+    "db:seed": "dotenv -e .env -- npm run seed -w @ame/database",
+    "db:studio": "dotenv -e .env -- npm run studio -w @ame/database"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^8.0.0"
   },
   "engines": {
     "node": ">=20"
