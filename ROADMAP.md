@@ -17,10 +17,11 @@ Phase 4  Weeks 7–8    Content Factory
 Phase 5  Weeks 9–12   Publishing Engine
 Phase 6  Ongoing       Dashboard polish + Revenue tracking
 
-Revenue path:
-  Month 2–3  → First SEO micro-site from top opportunity
-  Month 4–6  → AdSense + affiliate on live site
-  Month 6+   → YouTube channel from same pipeline
+Revenue path (founder priority — $0 out-of-pocket):
+  Month 1–2  → YouTube channel from same pipeline (scripts → upload, $0 hosting)
+  Month 2–3  → First revenue (YouTube AdSense / affiliates when eligible)
+  Month 3+   → Article cluster generated in parallel; custom domain only after revenue
+  Month 4–6  → SEO site live (second asset) when domain/hosting budget exists
 ```
 
 ---
@@ -277,12 +278,21 @@ The MVP is **Phase 0 + Phase 1 (3 sources) + Phase 2**. Nothing else.
 | Milestone | Target | Action |
 |-----------|--------|--------|
 | M1 | Week 4 | MVP live, reviewing opportunities weekly |
-| M2 | Month 2 | Pick #1 opportunity, register domain, deploy site template |
-| M3 | Month 3 | 10–20 articles published from Content Factory |
-| M4 | Month 4 | Apply for AdSense, add affiliate links |
-| M5 | Month 5 | SEO indexing, internal linking, 1 article/week auto-published |
-| M6 | Month 6 | Evaluate YouTube launch from same opportunity |
-| **Goal** | Month 6–8 | **$100/month** combined AdSense + affiliate |
+| M2 | Month 1–2 | Launch YouTube channel for #1 opportunity — scripts from Content Factory, manual upload ($0) |
+| M3 | Month 2–3 | 10+ videos / Shorts published; apply for YouTube Partner Program when eligible |
+| M4 | Month 3+ | Generate article cluster in parallel (review queue); **no domain purchase required yet** |
+| M5 | Month 4+ | Deploy SEO site **only when revenue covers domain + hosting** |
+| M6 | Month 5–6 | AdSense + affiliate on article site (second asset) |
+| **Goal** | Month 6–8 | **$100/month** combined YouTube + site revenue |
+
+### Dual-track content (same pipeline)
+
+Discovery → scoring → AI winner is **shared**. Content Factory can produce both asset types from one opportunity:
+
+| Track | Output | Upfront cost | Priority |
+|-------|--------|--------------|----------|
+| YouTube | `youtube_script`, `shorts_script` | $0 | **P0 — ship first** |
+| SEO site | `article` | Domain + hosting | **P1 — generate now, publish later** |
 
 ---
 

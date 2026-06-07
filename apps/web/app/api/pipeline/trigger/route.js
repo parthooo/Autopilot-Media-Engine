@@ -3,6 +3,7 @@ import {
   scoreOpportunities,
   autoSelectWinner,
   generateContent,
+  exportApprovedContent,
   runFullPipeline,
 } from "@ame/pipeline";
 import { dispatchGitHubWorkflow } from "../../../../lib/github-dispatch";
@@ -14,9 +15,28 @@ const STEPS = {
   ingest: { fn: ingestAll, workflow: "ingest.yml" },
   score: { fn: scoreOpportunities, workflow: "score.yml" },
   "auto-select": { fn: autoSelectWinner, workflow: "auto-select.yml" },
-  "generate-content": { fn: () => generateContent({ autoApprove: true }), workflow: "generate-content.yml" },
+  "generate-content": {
+    fn: (options = {}) => generateContent({ autoApprove: true, ...options }),
+    workflow: "generate-content.yml",
+    workflowInputs: (body) => ({ variant: body.variant || "all" }),
+  },
+  "export-content": {
+    fn: exportApprovedContent,
+    localOnly: true,
+  },
   full: { fn: runFullPipeline, workflow: "pipeline.yml" },
 };
+
+function getGenerateOptions(body) {
+  const variant = body.variant || "all";
+  if (variant === "youtube-only") {
+    return { includeYouTube: true, includeArticles: false };
+  }
+  if (variant === "articles-only") {
+    return { includeYouTube: false, includeArticles: true };
+  }
+  return { includeYouTube: true, includeArticles: true };
+}
 
 export async function POST(request) {
   try {
@@ -29,8 +49,17 @@ export async function POST(request) {
       return errorResponse(`Invalid step. Use: ${Object.keys(STEPS).join(", ")}`, 400);
     }
 
+    if (config.localOnly && process.env.VERCEL === "1") {
+      return errorResponse(
+        "Export to disk is local-only. Run: npm run worker -- export-content",
+        400
+      );
+    }
+
+    const workflowInputs = config.workflowInputs?.(body);
+
     if (mode === "github") {
-      const dispatch = await dispatchGitHubWorkflow(config.workflow);
+      const dispatch = await dispatchGitHubWorkflow(config.workflow, workflowInputs);
       return jsonResponse({
         mode: "github",
         step,
@@ -42,7 +71,13 @@ export async function POST(request) {
     }
 
     if (process.env.VERCEL === "1" && !process.env.FORCE_INLINE_PIPELINE) {
-      const dispatch = await dispatchGitHubWorkflow(config.workflow);
+      if (config.localOnly) {
+        return errorResponse(
+          "Export to disk is local-only. Run: npm run worker -- export-content",
+          400
+        );
+      }
+      const dispatch = await dispatchGitHubWorkflow(config.workflow, workflowInputs);
       if (dispatch.dispatched) {
         return jsonResponse({
           mode: "github",
@@ -53,7 +88,9 @@ export async function POST(request) {
       }
     }
 
-    const result = await config.fn();
+    const fnArgs =
+      step === "generate-content" ? getGenerateOptions(body) : undefined;
+    const result = await config.fn(fnArgs);
     return jsonResponse({ mode: "inline", step, result });
   } catch (error) {
     return errorResponse(error.message);

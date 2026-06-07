@@ -29,6 +29,7 @@ const {
   scoreOpportunities,
   autoSelectWinner,
   generateContent,
+  exportApprovedContent,
   runFullPipeline,
 } = require("@ame/pipeline");
 const { prisma, ensureDatabaseReady } = require("@ame/database");
@@ -86,7 +87,21 @@ async function main() {
 
     case "generate-content": {
       const exportMd = args.includes("--export");
-      const result = await generateContent({ autoApprove: true, exportMarkdown: exportMd });
+      const youtubeOnly = args.includes("--youtube-only");
+      const articlesOnly = args.includes("--articles-only");
+      const result = await generateContent({
+        autoApprove: true,
+        exportMarkdown: exportMd,
+        includeYouTube: !articlesOnly,
+        includeArticles: !youtubeOnly,
+      });
+      console.log(JSON.stringify(result, null, 2));
+      if (!result.success) process.exit(1);
+      break;
+    }
+
+    case "export-content": {
+      const result = await exportApprovedContent();
       console.log(JSON.stringify(result, null, 2));
       if (!result.success) process.exit(1);
       break;
@@ -108,9 +123,14 @@ Commands:
   ingest-all               Ingest all active sources
   score                    Calculate opportunity scores
   auto-select              AI picks ONE winner and auto-approves
-  generate-content         Generate 5 SEO articles for approved winner
-  generate-content --export  Also write Markdown files to content/
+  generate-content              YouTube + Shorts + articles (YouTube first)
+  generate-content --export     Generate and write to content/
+  generate-content --youtube-only   Pillar + 5 Shorts only
+  generate-content --articles-only  5 SEO articles only
+  export-content           Export existing approved content to content/
   pipeline                 Full automation: ingest → score → select → generate
+
+Every command above has a matching dashboard button — see AUTOMATION.md
 `);
       process.exit(command ? 1 : 0);
   }

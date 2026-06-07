@@ -391,4 +391,5 @@ No external monitoring service in MVP. GitHub Actions email on failure is suffic
 
 - [PROJECT_VISION.md](./PROJECT_VISION.md) — Principles and north star
 - [ROADMAP.md](./ROADMAP.md) — What to build and when
+- [AUTOMATION.md](./AUTOMATION.md) — Automation ↔ manual action matrix (required for new jobs)
 - [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) — Table definitions and indexes

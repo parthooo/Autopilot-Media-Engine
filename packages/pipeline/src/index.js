@@ -1,7 +1,7 @@
 const { ingestSource, ingestAll } = require("./ingest");
 const { scoreOpportunities } = require("./score");
 const { autoSelectWinner, runFullPipeline } = require("./auto-select");
-const { generateContent } = require("./generate-content");
+const { generateContent, exportApprovedContent } = require("./generate-content");
 
 module.exports = {
   ingestSource,
@@ -9,5 +9,6 @@ module.exports = {
   scoreOpportunities,
   autoSelectWinner,
   generateContent,
+  exportApprovedContent,
   runFullPipeline,
 };

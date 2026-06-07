@@ -1,8 +1,9 @@
 /**
  * Trigger a GitHub Actions workflow via workflow_dispatch (for Vercel-hosted dashboard).
  * @param {string} workflowFile - e.g. "pipeline.yml"
+ * @param {Record<string, string>} [inputs]
  */
-export async function dispatchGitHubWorkflow(workflowFile) {
+export async function dispatchGitHubWorkflow(workflowFile, inputs) {
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPOSITORY;
 
@@ -13,6 +14,11 @@ export async function dispatchGitHubWorkflow(workflowFile) {
   const [owner, name] = repo.split("/");
   const url = `https://api.github.com/repos/${owner}/${name}/actions/workflows/${workflowFile}/dispatches`;
 
+  const payload = { ref: process.env.GITHUB_REF || "main" };
+  if (inputs && Object.keys(inputs).length > 0) {
+    payload.inputs = inputs;
+  }
+
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -20,7 +26,7 @@ export async function dispatchGitHubWorkflow(workflowFile) {
       Accept: "application/vnd.github+json",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ref: process.env.GITHUB_REF || "main" }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
