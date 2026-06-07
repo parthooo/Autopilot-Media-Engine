@@ -512,10 +512,27 @@ WHERE recorded_at > NOW() - INTERVAL '7 days';
 | Week 1 | `002_scoring` | opportunities, opportunity_score_history |
 | Phase 3 | `003_analysis` | opportunity_analyses |
 | Phase 4 | `004_content` | content_assets |
+| Phase 4b | `004b_video` | video render metadata on content_assets (or video_assets) |
 | Phase 5 | `005_publishing` | channels, publications |
+| Phase 6 | `006_channels` | channel portfolio mapping, OAuth fields |
 | Phase 6 | `006_revenue` | revenue_events |
 
 Never add Phase 3+ tables before Phase 1–2 are stable. Prisma migrations are sequential and additive — no destructive changes without explicit backup.
+
+### `channels` (Phase 5+)
+
+Stores connected publish targets. One row per platform + channel identity.
+
+| Column | Purpose |
+|--------|---------|
+| `platform` | `youtube`, `instagram`, `facebook`, `tiktok`, `reddit`, `pinterest`, `static_site` |
+| `niche_category` | AI-assigned category (e.g. `tech`, `finance_us`, `ai`) for routing winners |
+| `oauth_tokens` | Encrypted refresh token JSON (operator connects once) |
+| `is_active` | Whether cron publishes here |
+
+**Multi-channel rule:** one channel per topic category; winner pick assigns content to matching `channels` row.
+
+See [PROJECT_VISION.md](./PROJECT_VISION.md) platform hierarchy and [ARCHITECTURE.md](./ARCHITECTURE.md) multi-channel section.
 
 ---
 

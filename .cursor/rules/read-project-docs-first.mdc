@@ -5,18 +5,30 @@ alwaysApply: true
 
 # Read Project Docs Before Any Work
 
-This repo is **Autopilot Media Engine** — a platform, not a one-off scraper or YouTube bot.
+This repo is **Autopilot Media Engine** — a platform, not a one-off scraper or upload bot.
+
+## Platform hierarchy (never forget)
+
+```
+PARENT   Niche library (ingest → score → analyze)
+GATE     Pick ONE winner per cycle
+CHILD    Video (script → render) + Article (generate) — from winner only
+SUB      Publishers: YT, IG, FB, TikTok, Reddit, Pinterest + SEO site
+```
+
+**Full autopilot** is the goal: winner → generate → render → publish. See `PROJECT_VISION.md`.
 
 ## Before writing, editing, or running implementation code
 
-**Read these four files first** (in order):
+**Read these files first** (in order):
 
-1. `PROJECT_VISION.md` — why, principles, anti-patterns
-2. `ARCHITECTURE.md` — services, APIs, deployment, boundaries
+1. `PROJECT_VISION.md` — hierarchy, principles, north star
+2. `ARCHITECTURE.md` — services, pipeline, package boundaries
 3. `DATABASE_SCHEMA.md` — tables, relationships, normalization
-4. `ROADMAP.md` — current phase, MVP scope, phase gates
+4. `ROADMAP.md` — current phase, gates, planned work
+5. `AGENTS.md` — agent checklist + hard rules
 
-Also read `AGENTS.md` at the repo root for the agent workflow checklist.
+Also skim `AUTOMATION.md` when adding crons, jobs, or dashboard buttons.
 
 ## When this applies
 
@@ -36,14 +48,16 @@ Also read `AGENTS.md` at the repo root for the agent workflow checklist.
 
 ## Hard constraints (never violate without explicit approval)
 
-- Platform first, revenue assets second — logic lives here, not in site repos
-- **$0 out-of-pocket for revenue assets** — no paid domains/hosting as a prerequisite; operator funds those only after revenue
-- **YouTube-first monetization** — prioritize YouTube scripts + publish over SEO site launch; articles run in parallel as prep, not first revenue
-- **Automation + manual parity** — every automated job needs dashboard button + CLI + GitHub workflow_dispatch; see `AUTOMATION.md`
-- $0 platform infra default: Vercel + Neon + GitHub Actions cron + Gemini free tier
-- Solo operator: no premature Redis, BullMQ, microservices, or multi-user auth
-- Service boundaries in ARCHITECTURE.md — adapters don't write DB; worker orchestrates
+- Platform first, revenue assets second — logic lives here, not in site/channel repos
+- **Hierarchy:** Parent library → **one winner** → video + article children → platform publishers
+- **Not** generate/publish for entire library at once — winner only
+- **$0 out-of-pocket** for revenue assets until operator has budget
+- **Video/social autopublish** is north star — not permanent manual upload
+- **Automation + manual parity** — every job needs button + CLI + workflow_dispatch; see `AUTOMATION.md`
+- $0 platform infra: Vercel + Neon + GitHub Actions + Gemini free tier
+- Solo operator: no premature Redis, BullMQ, microservices
+- Service boundaries in `ARCHITECTURE.md` — adapters don't write DB; worker orchestrates
 
 ## Quick phase check
 
-Before building a feature, confirm it matches the current phase in `ROADMAP.md`. Do not skip phases.
+Before building, confirm phase in `ROADMAP.md`. Current focus: **Phase 4a** (text factory). Next: **4b render**, **5a video publish**.

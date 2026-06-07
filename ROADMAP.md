@@ -9,19 +9,20 @@ See [PROJECT_VISION.md](./PROJECT_VISION.md) for principles and [ARCHITECTURE.md
 ## Timeline Overview
 
 ```
-Phase 0  Week 1        Foundation + first pipeline
-Phase 1  Weeks 2–3    Trend Discovery (3→6 sources)
-Phase 2  Week 4        Opportunity Scoring
-Phase 3  Weeks 5–6    AI Analysis (Gemini)
-Phase 4  Weeks 7–8    Content Factory
-Phase 5  Weeks 9–12   Publishing Engine
-Phase 6  Ongoing       Dashboard polish + Revenue tracking
+Phase 0–2   Foundation, discovery, scoring     ← niche library (Parent)
+Phase 3     AI analysis + winner pick          ← Gate (one winner/cycle)
+Phase 4a    Text content factory               ← scripts + articles (Children) [IN PROGRESS]
+Phase 4b    Video render factory               ← MP4 long + Shorts ($0 stack)
+Phase 5a    Video publishers                   ← YT, IG, FB, TikTok, Reddit, Pinterest
+Phase 5b    Article publishers                 ← SEO site (when budget allows)
+Phase 6     Multi-channel + revenue dashboard
 
-Revenue path (founder priority — $0 out-of-pocket):
-  Month 1–2  → YouTube channel from same pipeline (scripts → upload, $0 hosting)
-  Month 2–3  → First revenue (YouTube AdSense / affiliates when eligible)
-  Month 3+   → Article cluster generated in parallel; custom domain only after revenue
-  Month 4–6  → SEO site live (second asset) when domain/hosting budget exists
+Revenue path ($0 out-of-pocket):
+  Now        → Niche library + winner pick running unattended
+  Phase 4a   → Scripts + articles from winner (YouTube-first)
+  Phase 4b   → Auto-rendered videos (no manual recording)
+  Phase 5a   → Auto-publish to social platforms ($0 hosting)
+  Phase 5b   → Article site when domain budget exists
 ```
 
 ---
@@ -164,83 +165,139 @@ At least one opportunity has analysis good enough that you would publish content
 
 ---
 
-## Phase 4 — Content Factory (Weeks 7–8)
+## Phase 4a — Content Factory: Text (current)
 
-**Goal:** Turn approved opportunities into publishable content assets.
+**Goal:** From the **approved winner only**, generate video scripts + article cluster in parallel.
+
+**Hierarchy layer:** Video child + Article child (text stage).
 
 ### Output Types
 
-| Asset Type | Format |
-|------------|--------|
-| Website article | Markdown with frontmatter |
-| YouTube script | Structured sections (hook, body, CTA) |
-| Shorts script | 30–60 second format |
-| Social post | X / LinkedIn text |
-| Newsletter draft | Subject + body |
+| Asset Type | Branch | Format |
+|------------|--------|--------|
+| `youtube_script` | Video | Long-form, timestamped, B-roll cues |
+| `shorts_script` | Video | 30–60 sec vertical |
+| `article` | Article | Markdown + frontmatter |
 
 ### Deliverables
 
-- [ ] `content_assets` table
-- [ ] Generation prompts in `packages/ai`
-- [ ] Worker job: `generate-content` for approved opportunities
-- [ ] Dashboard: content review queue (approve / reject / edit)
-- [ ] Export approved content as Markdown files
+- [x] `content_assets` table
+- [x] Generation prompts in `packages/ai`
+- [x] Worker: `generate-content` (YouTube-first variants)
+- [x] Dashboard: content queue + manual generate buttons
+- [ ] Winner analysis always includes video strategy (pillar + Shorts cluster)
 
 ### Success Criteria
 
-- Generate a 5-article cluster from one approved opportunity
-- Human edit time < 15 min per article before publish-ready
+- One approved winner → 1 pillar script + 5 Shorts + 5 articles per cycle
+- Automation + manual parity per [AUTOMATION.md](./AUTOMATION.md)
 
-### Gate to Phase 5
+### Gate to Phase 4b
 
-You have 5+ approved articles ready to publish for one topic.
+Scripts generate reliably from winner; pipeline runs unattended for 7+ days.
 
 ---
 
-## Phase 5 — Publishing Engine (Weeks 9–12)
+## Phase 4b — Video Factory: Render
 
-**Goal:** Modular publishing to revenue asset channels.
+**Goal:** Turn approved scripts into **MP4 files** automatically — no manual recording.
 
-### Publisher Priority
+**Hierarchy layer:** Video child (render step).
 
-| Priority | Adapter | MVP approach |
-|----------|---------|--------------|
-| P0 | Markdown file export | Commit to static site repo |
-| P1 | Static Next.js site | First revenue asset template |
-| P2 | WordPress REST API | If first site is WordPress |
-| P3 | YouTube | Script export + manual upload |
-| P4 | X / Pinterest | API posting when stable |
+### Stack ($0 default)
+
+| Component | Tool |
+|-----------|------|
+| Voice | Edge TTS / Piper / Gemini TTS |
+| Visuals | Pexels/Pixabay stock, slides |
+| Assembly | FFmpeg |
+| Worker | GitHub Actions or free Render/Railway if timeouts hit |
 
 ### Deliverables
 
-- [ ] `channels` and `publications` tables
+- [ ] `packages/video` — render pipeline
+- [ ] `video_assets` table (or extend `content_assets` with `rendered` metadata)
+- [ ] Worker: `render-videos` for approved winner's scripts
+- [ ] Dashboard + CLI + workflow (manual parity)
+- [ ] Long-form 9:16 Shorts from same pipeline
+
+### Success Criteria
+
+- Winner's pillar script → watchable MP4 without human editing
+- 5 Shorts rendered per cycle
+
+### Gate to Phase 5a
+
+At least one rendered video you'd publish without re-recording.
+
+---
+
+## Phase 5a — Video Publishers
+
+**Goal:** Auto-upload rendered videos to connected social platforms on a schedule.
+
+**Hierarchy layer:** Video sub-children (publisher adapters).
+
+### Platform priority
+
+| Priority | Platform | Notes |
+|----------|----------|-------|
+| P0 | YouTube | Data API v3, OAuth per channel |
+| P1 | TikTok | Content Posting API |
+| P1 | Instagram | Meta Graph API (Reels) |
+| P2 | Facebook | Meta Graph API |
+| P2 | Pinterest | Video pins API |
+| P2 | Reddit | Post API (native video) |
+
+### Deliverables
+
 - [ ] `packages/publishers` adapter interface
-- [ ] Markdown + static site publisher
-- [ ] Worker job: `publish-content`
-- [ ] Dashboard: publication status per content asset
+- [ ] `channels` table — platform, niche category, OAuth tokens
+- [ ] `publications` table — asset → platform → URL/status
+- [ ] Worker: `publish-video`
+- [ ] Operator connects channel creds once; automation handles rest
+- [ ] Dashboard: publication status, manual publish button per platform
 
 ### Success Criteria
 
-- One SEO micro-site live with 10+ articles published via the engine
-- Publishing is one-click (or one cron) after content approval
+- Rendered video auto-uploads to YouTube + at least one other platform
+- Full autopilot: winner → render → publish without manual steps
 
 ---
 
-## Phase 6 — Dashboard & Revenue (Ongoing)
+## Phase 5b — Article Publishers
 
-**Goal:** Operate the business in < 30 min/day.
+**Goal:** Auto-publish article cluster from winner when site exists.
+
+**Hierarchy layer:** Article sub-children.
 
 ### Deliverables
 
-- [ ] Revenue manual entry (AdSense, affiliate)
-- [ ] Channel performance view
-- [ ] Opportunity → content → publication funnel metrics
-- [ ] NextAuth admin login
-- [ ] Mobile-friendly dashboard review flow
+- [ ] Static site / Markdown publisher adapter
+- [ ] Worker: `publish-articles`
+- [ ] Deferred until operator has domain budget OR free `*.vercel.app` staging
 
 ### Success Criteria
 
-- Daily workflow: open dashboard → review new opportunities → approve content → check revenue. Under 30 minutes.
+- 5+ articles from winner live on a site via one cron/button
+
+---
+
+## Phase 6 — Multi-Channel Portfolio & Revenue
+
+**Goal:** AI recommends channel portfolio; operator connects multiple single-topic channels; platform routes each winner to the correct channel.
+
+### Deliverables
+
+- [ ] AI channel portfolio analysis (how many channels, what categories)
+- [ ] Winner → channel assignment in analysis
+- [ ] Dashboard: channel manager, OAuth connect flow, per-channel metrics
+- [ ] Revenue manual entry + funnel metrics
+
+### Success Criteria
+
+- 2+ channels publishing automatically from same niche library
+- Daily operator time < 30 min
 
 ---
 
@@ -285,14 +342,14 @@ The MVP is **Phase 0 + Phase 1 (3 sources) + Phase 2**. Nothing else.
 | M6 | Month 5–6 | AdSense + affiliate on article site (second asset) |
 | **Goal** | Month 6–8 | **$100/month** combined YouTube + site revenue |
 
-### Dual-track content (same pipeline)
+### Dual-track from one winner
 
-Discovery → scoring → AI winner is **shared**. Content Factory can produce both asset types from one opportunity:
+Each cycle: **pick one winner** → parallel generation:
 
-| Track | Output | Upfront cost | Priority |
-|-------|--------|--------------|----------|
-| YouTube | `youtube_script`, `shorts_script` | $0 | **P0 — ship first** |
-| SEO site | `article` | Domain + hosting | **P1 — generate now, publish later** |
+| Track | Output | Publish targets | Priority |
+|-------|--------|-----------------|----------|
+| Video | scripts → MP4 → publish | YouTube, IG, FB, TikTok, Reddit, Pinterest | **P0** |
+| Article | Markdown cluster | SEO site (when budget exists) | **P1** |
 
 ---
 
@@ -303,7 +360,9 @@ Discovery → scoring → AI winner is **shared**. Content Factory can produce b
 - Multi-user RBAC — solo operator only
 - Kubernetes — never, for this project
 - Embedding-based topic clustering — defer until rule-based normalization fails
-- Auto-publish without human approval — always review before publish (MVP through Phase 5)
+- Generating content for **all** library niches at once — **one winner per cycle only**
+- Manual upload as the **permanent** architecture — full autopilot publish is the north star
+- Paid video APIs (Runway, etc.) by default — compose $0 TTS + stock + FFmpeg first
 
 ---
 
@@ -317,8 +376,11 @@ Before advancing, confirm:
 | Phase 1 → 2 | Are 500+ topics deduplicated correctly? |
 | Phase 2 → 3 | Can you explain the top 5 scores without guessing? |
 | Phase 3 → 4 | Is one analysis good enough to plan content? |
-| Phase 4 → 5 | Do you have 5+ publish-ready articles? |
-| Phase 5 → 6 | Is one site live with 10+ published articles? |
+| Phase 4a → 4b | Do winner's scripts render to watchable MP4 without you? |
+| Phase 4b → 5a | Would you auto-publish one rendered video to YouTube? |
+| Phase 5a → 5b | Is video publishing unattended on 2+ platforms? |
+| Phase 5b → 6 | Are articles live on a site from the same winner pipeline? |
+| Phase 6 | Are 2+ channels fed automatically with < 30 min/day from you? |
 
 ---
 
@@ -326,4 +388,5 @@ Before advancing, confirm:
 
 - [PROJECT_VISION.md](./PROJECT_VISION.md)
 - [ARCHITECTURE.md](./ARCHITECTURE.md)
+- [AUTOMATION.md](./AUTOMATION.md)
 - [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md)

@@ -6,47 +6,51 @@ This document defines how the system is structured, deployed, and extended. It i
 
 ## System Overview
 
-Autopilot Media Engine is a **monorepo** with two deployable apps and shared packages. Data flows in one direction: ingest → normalize → score → analyze → generate → publish.
+Autopilot Media Engine is a **monorepo** with two deployable apps and shared packages. Data flows through the [platform hierarchy](./PROJECT_VISION.md#platform-hierarchy-core-model--do-not-forget):
+
+**Niche library → pick one winner → video + article factories → platform publishers.**
 
 ```mermaid
 flowchart TB
-    subgraph Sources["External Sources"]
+    subgraph Parent["Parent — Niche Library"]
+        INGEST[Ingest]
+        SCORE[Score]
+        ANALYZE[Analyze]
+        LIB[(opportunities DB)]
+    end
+
+    subgraph Gate["Gate — One winner per cycle"]
+        PICK[AI pick winner]
+    end
+
+    subgraph VideoChild["Child — Video"]
+        VSCRIPT[Scripts]
+        VRENDER[Render MP4]
+    end
+
+    subgraph ArticleChild["Child — Article"]
+        AWRITE[Generate articles]
+    end
+
+    subgraph VideoPub["Sub-children — Video publishers"]
         YT[YouTube]
-        GT[Google Trends]
+        IG[Instagram]
+        FB[Facebook]
+        TT[TikTok]
         RD[Reddit]
-        PH[Product Hunt]
-        GH[GitHub Trending]
-        HN[Hacker News]
+        PIN[Pinterest]
     end
 
-    subgraph ControlPlane["Control Plane — Vercel"]
-        WEB[Next.js Dashboard]
-        API[API Routes]
+    subgraph ArticlePub["Sub-children — Article publishers"]
+        SITE[SEO site]
     end
 
-    subgraph Workers["Background Workers — GitHub Actions"]
-        CRON[Scheduler]
-        INGEST[Ingestion]
-        SCORE[Scoring]
-        AI[Analysis]
-        FACTORY[Content Factory]
-        PUB[Publishing]
-    end
-
-    subgraph Data["Neon PostgreSQL"]
-        DB[(PostgreSQL)]
-    end
-
-    subgraph Intelligence["AI"]
-        GEM[Gemini API]
-    end
-
-    Sources --> INGEST
-    CRON --> INGEST & SCORE & AI & FACTORY & PUB
-    INGEST & SCORE & AI & FACTORY --> DB
-    AI & FACTORY --> GEM
-    PUB --> Assets[Revenue Assets]
-    WEB --> API --> DB
+    INGEST --> SCORE --> ANALYZE --> LIB
+    LIB --> PICK
+    PICK --> VSCRIPT --> VRENDER
+    PICK --> AWRITE
+    VRENDER --> YT & IG & FB & TT & RD & PIN
+    AWRITE --> SITE
 ```
 
 ---
@@ -121,7 +125,15 @@ autopilot-media-engine/
 │   ├── ingest/                 # Source adapters
 │   ├── scoring/                # Opportunity scoring engine
 │   ├── ai/                     # Gemini client + prompts
-│   └── publishers/             # Publishing adapters (Phase 5+)
+│   ├── video/                  # TTS + visuals + FFmpeg render (Phase 4b)
+│   └── publishers/             # Platform adapters (Phase 5+)
+│       ├── youtube.js
+│       ├── instagram.js
+│       ├── facebook.js
+│       ├── tiktok.js
+│       ├── reddit.js
+│       ├── pinterest.js
+│       └── static-site.js      # Article publisher
 │
 ├── .github/workflows/          # Cron: ingest.yml, score.yml
 ├── PROJECT_VISION.md
@@ -159,41 +171,64 @@ apps/worker ───┘         ▲
 | `packages/ingest` | Fetching, parsing, `RawSignal` shape | DB writes, scoring, AI calls |
 | `packages/scoring` | Score calculation from metrics | Fetching, AI, HTTP |
 | `packages/ai` | Prompts, Gemini calls, structured JSON output | Direct DB access |
+| `packages/video` | Script → MP4 render (TTS, stock, FFmpeg) | Discovery, scoring, publish |
 | `packages/database` | Prisma schema, client singleton | Business logic |
-| `packages/publishers` | Platform-specific publish logic | Discovery or scoring |
+| `packages/publishers` | Platform-specific publish logic (one adapter per platform) | Discovery or scoring |
 | `apps/worker` | Job orchestration, DB writes, run logging | Source-specific parsing |
 | `apps/web` | UI, HTTP handlers, human review actions | Scraping, batch jobs |
 
 ### Worker Job Pipeline
 
+Maps to [platform hierarchy](./PROJECT_VISION.md#platform-hierarchy-core-model--do-not-forget):
+
 ```
+── PARENT: Niche library ──────────────────────────────────────
+
 ingest-all
-  └─► for each active source:
-        adapter.fetch()
-        → normalize topic
-        → upsert raw_signals, topics, topic_metrics
-        → log ingestion_run
+  └─► for each active source → normalize → topics, raw_signals, topic_metrics
 
 score-opportunities
-  └─► load topics with recent metrics
-        → calculate 5 sub-scores + opportunity_score
-        → upsert opportunities + score_history
+  └─► all topics → opportunity scores + score_history
 
-analyze-opportunities        [Phase 3]
-  └─► opportunities where score ≥ threshold AND no analysis
-        → Gemini structured analysis
-        → save opportunity_analyses
+── GATE: One winner ────────────────────────────────────────────
 
-generate-content             [Phase 4]
-  └─► approved opportunities
-        → Gemini content generation
-        → save content_assets
+auto-select-winner                    [Phase 3 — live]
+  └─► top candidates → Gemini picks ONE → approved
+      → opportunity_analyses for winner
+      → reject/archive other candidates in batch
 
-publish-content              [Phase 5]
-  └─► approved content_assets
-        → publisher adapter
-        → log publications
+── CHILDREN: From approved winner only ─────────────────────────
+
+generate-content                      [Phase 4a — live]
+  └─► approved winner
+        → Video branch: youtube_script + shorts_script
+        → Article branch: article cluster
+        → content_assets
+
+render-videos                         [Phase 4b — planned]
+  └─► approved video scripts for winner
+        → TTS + stock/slides + FFmpeg
+        → video_assets (MP4 long + Shorts)
+
+── SUB-CHILDREN: Publishers ────────────────────────────────────
+
+publish-video                         [Phase 5a — planned]
+  └─► rendered videos → publisher adapter per platform
+        → YouTube, Instagram, Facebook, TikTok, Reddit, Pinterest
+        → publications log
+
+publish-articles                      [Phase 5b — planned]
+  └─► approved articles → static site / syndication adapter
+        → publications log
+
+── ORCHESTRATOR ────────────────────────────────────────────────
+
+pipeline (full)
+  └─► ingest → score → auto-select → generate-content
+      → (future) render-videos → publish-video + publish-articles
 ```
+
+**Critical rule:** `generate-content`, `render-videos`, and `publish-*` always operate on the **current approved winner**, not the entire opportunity library.
 
 ---
 
@@ -344,21 +379,28 @@ REST JSON under `/api` in `apps/web`. Consistent response envelope:
 3. Seed row in `sources` table
 4. No changes to worker orchestration required
 
-### Adding a New Publisher
+### Adding a New Publisher (Video or Article sub-child)
 
-1. Create adapter in `packages/publishers/src/adapters/<platform>.js`
-2. Register channel in `channels` table
-3. Wire into `publish-content` job
+1. Implement adapter in `packages/publishers/<platform>.js`
+2. Register in publisher registry
+3. Add `channels` row (platform, OAuth tokens, niche category mapping)
+4. Wire into `publish-video` or `publish-articles` job
+5. Add dashboard button + CLI + workflow per [AUTOMATION.md](./AUTOMATION.md)
+
+**Video platforms (planned):** YouTube, Instagram, Facebook, TikTok, Reddit, Pinterest.
+
+**Article platforms (planned):** Static SEO site first; syndication later.
+
+### Multi-channel strategy (Phase 6)
+
+- One social channel per **topic category** (e.g. tech, finance US, AI) — chosen by AI, not hardcoded.
+- Each `channels` row: `platform`, `niche_category`, OAuth credentials, `is_active`.
+- Winner pick includes **channel assignment** — which connected channel this cycle's content goes to.
+- Operator creates channels and provides creds once; automation routes content thereafter.
 
 ### Adding a New Revenue Asset
 
-Revenue assets are **consumers**, not part of this repo (except the first reference site). They receive:
-
-- Published articles (Markdown or WordPress)
-- YouTube scripts (manual upload initially)
-- SEO keyword lists from analysis
-
-They do not run their own trend discovery.
+Revenue assets are **consumers**, not part of this repo (except reference templates). They receive published output from `packages/publishers`. They do **not** run their own trend discovery or winner selection.
 
 ---
 

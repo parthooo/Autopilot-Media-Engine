@@ -3,16 +3,29 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const links = [
-  { href: "/", label: "Overview", match: (path) => path === "/" },
-  { href: "/trends", label: "Trends", match: (path) => path.startsWith("/trends") },
+const navSections = [
   {
-    href: "/opportunities",
-    label: "Opportunities",
-    match: (path) => path.startsWith("/opportunities"),
+    label: null,
+    links: [{ href: "/", label: "Overview", match: (path) => path === "/" }],
   },
-  { href: "/content", label: "Content", match: (path) => path.startsWith("/content") },
-  { href: "/ingestion", label: "Ingestion", match: (path) => path.startsWith("/ingestion") },
+  {
+    label: "Parent · Library",
+    links: [
+      { href: "/trends", label: "Trends", match: (path) => path.startsWith("/trends") },
+      {
+        href: "/opportunities",
+        label: "Opportunities",
+        match: (path) => path.startsWith("/opportunities"),
+      },
+      { href: "/ingestion", label: "Ingestion", match: (path) => path.startsWith("/ingestion") },
+    ],
+  },
+  {
+    label: "Children · Factory",
+    links: [
+      { href: "/content", label: "Content", match: (path) => path.startsWith("/content") },
+    ],
+  },
 ];
 
 export function Nav() {
@@ -24,15 +37,22 @@ export function Nav() {
         Autopilot Media Engine
       </Link>
       <nav className="sidebar-nav" aria-label="Main">
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`sidebar-link${link.match(pathname) ? " is-active" : ""}`}
-            aria-current={link.match(pathname) ? "page" : undefined}
-          >
-            {link.label}
-          </Link>
+        {navSections.map((section) => (
+          <div key={section.label ?? "root"} className="sidebar-section">
+            {section.label && (
+              <div className="sidebar-section-label">{section.label}</div>
+            )}
+            {section.links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`sidebar-link${link.match(pathname) ? " is-active" : ""}`}
+                aria-current={link.match(pathname) ? "page" : undefined}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         ))}
       </nav>
       <div className="sidebar-footer">

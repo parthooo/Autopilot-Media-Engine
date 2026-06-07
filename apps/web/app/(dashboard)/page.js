@@ -2,7 +2,7 @@ import { prisma } from "../../lib/db";
 import { ScoreBadge } from "../../components/score-badge";
 import { StatusBadge } from "../../components/status-badge";
 import { PageHeader } from "../../components/page-header";
-import { PipelineControls } from "../../components/pipeline-controls";
+import { PlatformHierarchy } from "../../components/platform-hierarchy";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -56,69 +56,12 @@ export default async function OverviewPage() {
     <div>
       <PageHeader
         title="Overview"
-        subtitle="Trend discovery and opportunity scoring at a glance"
+        subtitle="Platform pipeline — niche library, winner gate, video + article factory"
       />
 
-      <PipelineControls />
+      <PlatformHierarchy stats={stats} />
 
-      <div className="stat-strip">
-        <div className="stat-strip-item">
-          <div className="stat-value">{stats.topics}</div>
-          <div className="stat-label">Topics tracked</div>
-        </div>
-        <div className="stat-strip-item">
-          <div className="stat-value">{stats.opportunities}</div>
-          <div className="stat-label">Opportunities scored</div>
-        </div>
-        <div className="stat-strip-item">
-          <div className="stat-value">{stats.signalsToday}</div>
-          <div className="stat-label">Signals today</div>
-        </div>
-        <div className="stat-strip-item">
-          <div className="stat-value">{stats.activeSources}</div>
-          <div className="stat-label">Active sources</div>
-        </div>
-      </div>
-
-      {stats.lastRun && (
-        <p className="meta-line">
-          Last ingestion: {stats.lastRun.source.name} — {stats.lastRun.status}
-          {stats.lastRun.completedAt &&
-            ` · ${new Date(stats.lastRun.completedAt).toLocaleString()}`}
-        </p>
-      )}
-
-      {stats.aiWinner ? (
-        <section className="panel panel-spaced">
-          <div className="panel-title">Active niche</div>
-          <div className="panel-body">
-            <div className="score-hero score-hero--flush">
-              <ScoreBadge score={stats.aiWinner.opportunityScore} />
-              <Link href={`/opportunities/${stats.aiWinner.id}`}>
-                {stats.aiWinner.topic.title}
-              </Link>
-            </div>
-            {stats.aiWinner.analysis?.aiReasoning && (
-              <p className="muted u-mt-xs">{stats.aiWinner.analysis.aiReasoning}</p>
-            )}
-            {stats.aiWinner.analysis?.contentStrategy?.siteAngle && (
-              <p className="u-mt-xs">
-                <span className="section-label">Site angle</span>
-                {stats.aiWinner.analysis.contentStrategy.siteAngle}
-              </p>
-            )}
-          </div>
-        </section>
-      ) : (
-        <section className="panel panel-spaced">
-          <div className="panel-title">Active niche</div>
-          <div className="empty-state">
-            Run full pipeline — AI picks one niche automatically.
-          </div>
-        </section>
-      )}
-
-      <section className="panel">
+      <section className="panel panel-spaced">
         <div className="panel-title">
           Top opportunities
           <span className="panel-count">{stats.topOpportunities.length}</span>
