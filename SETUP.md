@@ -1,23 +1,41 @@
 # Setup Guide — Autopilot Media Engine
 
+## Fresh clone checklist
+
+Use this on a **new machine or folder** after `git clone`. Git gives you code only — not secrets, packages, tables, or seed data.
+
+```bash
+git clone <repo-url>
+cd autopilot-media-engine   # or your clone folder name
+
+cp .env.example .env        # 1 — create local env (edit values below)
+npm install                 # 2 — install deps + generate Prisma client
+npm run db:push             # 3 — create tables in Neon
+npm run db:seed             # 4 — insert default ingest sources
+npm run dev                 # 5 — start dashboard
+```
+
+| Step | Why it's needed |
+|------|-----------------|
+| `cp .env.example .env` | `.env` is gitignored (secrets). One file at **repo root** — do not create `packages/database/.env`. Copy **before** `npm install` so `postinstall` can generate the Prisma client. |
+| `npm install` | Installs monorepo dependencies (`node_modules` is not in git). Runs `prisma generate` via `postinstall`. |
+| `npm run db:push` | Applies `schema.prisma` to your Neon database. Fresh DBs have no tables until this runs. |
+| `npm run db:seed` | Inserts default **sources** (Hacker News, Reddit, Dev.to, etc.). Ingest/pipeline need these rows. |
+| `npm run dev` | Starts the Next.js dashboard at http://localhost:3000 |
+
+**Shared Neon DB?** If a teammate already ran `db:push` and `db:seed` on the same database, you can skip those steps — but you still need your own root `.env` with the connection strings and API keys.
+
+**Optional after setup:** `npm run worker -- pipeline` — ingest → score → AI picks one winner.
+
+Full variable reference: [README.md — Environment Variables](./README.md#environment-variables). For GitHub Actions and Vercel, see sections below.
+
+---
+
 ## 1. Local environment
 
 ```bash
 cp .env.example .env
-```
-
-Fill in:
-
-| Variable | Where to get it |
-|----------|-----------------|
-| `DATABASE_URL` | [Neon](https://neon.tech) → Connection string |
-| `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/apikey) — **free** |
-| `REDDIT_CLIENT_ID` | [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) → create **script** app → ID under app name |
-| `REDDIT_CLIENT_SECRET` | Same page → **secret** field |
-| `REDDIT_USER_AGENT` | `autopilot-media-engine:1.0.0 (by /u/yourusername)` |
-| `SITE_PASSWORD` | Dashboard login password (set on Vercel for production; optional locally) |
-
-```bash
+# Edit .env — see table below
 npm install
 npm run db:push
 npm run db:seed
@@ -25,7 +43,19 @@ npm run worker -- pipeline   # ingest → score → AI picks ONE winner
 npm run dev
 ```
 
-Open http://localhost:3000 — the **AI-selected winner** appears on Overview.
+Fill in `.env`:
+
+| Variable | Where to get it |
+|----------|-----------------|
+| `DATABASE_URL` | [Neon](https://neon.tech) → pooled connection string (`-pooler` host) |
+| `DIRECT_URL` | Same Neon project → direct connection string (no `-pooler`; used for migrations/local dev) |
+| `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/apikey) — **free** |
+| `REDDIT_CLIENT_ID` | [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) → create **script** app → ID under app name |
+| `REDDIT_CLIENT_SECRET` | Same page → **secret** field |
+| `REDDIT_USER_AGENT` | `autopilot-media-engine:1.0.0 (by /u/yourusername)` |
+| `SITE_PASSWORD` | Dashboard login password (set on Vercel for production; optional locally) |
+
+Open http://localhost:3000 — the **AI-selected winner** appears on Overview after you run the pipeline.
 
 ---
 
