@@ -31,20 +31,28 @@ packages/
 - Node.js 20+
 - Neon PostgreSQL database ([neon.tech](https://neon.tech))
 
-### 2. Setup
+### 2. Fresh clone checklist
+
+After `git clone` on a new device or folder:
 
 ```bash
-# Clone and install
-npm install
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your DATABASE_URL
-
-# Push schema and seed sources
-npm run db:push
-npm run db:seed
+cp .env.example .env   # secrets + DB URLs (edit before continuing)
+npm install            # deps + Prisma client (postinstall)
+npm run db:push        # create tables in Neon
+npm run db:seed        # default ingest sources
+npm run dev            # dashboard → http://localhost:3000
 ```
+
+| Step | Why |
+|------|-----|
+| `cp .env.example .env` | `.env` is not in git. Single file at **repo root** only. Do this **before** `npm install`. |
+| `npm install` | `node_modules` is not in git; `postinstall` runs `prisma generate`. |
+| `npm run db:push` | Empty Neon DB has no tables until schema is pushed. |
+| `npm run db:seed` | Pipeline needs seeded `Source` rows (HN, Reddit, Dev.to, …). |
+
+Using a **shared Neon database**? Skip `db:push` / `db:seed` if already done — you still need your own `.env`.
+
+See [SETUP.md](./SETUP.md) for GitHub Actions, Vercel, and troubleshooting.
 
 ### 3. Run ingestion + scoring
 
@@ -71,10 +79,16 @@ Open [http://localhost:3000](http://localhost:3000)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | Yes | Neon PostgreSQL connection string |
-| `REDDIT_USER_AGENT` | For Reddit | Custom user agent string |
-| `ADMIN_API_KEY` | For triggers | Protects manual API triggers |
-| `GEMINI_API_KEY` | Phase 3+ | AI analysis |
+| `DATABASE_URL` | Yes | Neon pooled connection string (`-pooler` host) |
+| `DIRECT_URL` | Yes | Neon direct URL (migrations + local `next dev`) |
+| `GEMINI_API_KEY` | Yes (AI winner) | Google AI Studio — free tier |
+| `REDDIT_CLIENT_ID` | For Reddit ingest | Reddit script app |
+| `REDDIT_CLIENT_SECRET` | For Reddit ingest | Reddit script app secret |
+| `REDDIT_USER_AGENT` | For Reddit ingest | `autopilot-media-engine:1.0.0 (by /u/you)` |
+| `SITE_PASSWORD` | Production dashboard | Optional locally (skip login if unset) |
+| `YOUTUBE_API_KEY` | Optional | YouTube trending ingest |
+| `GITHUB_TOKEN` | Optional | Dashboard buttons → trigger GitHub Actions |
+| `ADMIN_API_KEY` | Optional | Protects manual API triggers |
 
 ## Deployment
 
