@@ -26,8 +26,19 @@ See also: [ARCHITECTURE.md](./ARCHITECTURE.md) (worker pipeline), [SETUP.md](./S
 | **Generate articles** | 5 SEO articles (publish later) | Inside `pipeline.yml` (every 6h) | **Generate articles** | `npm run worker -- generate-content --articles-only` | `generate-content.yml` → variant `articles-only` |
 | **Generate all content** | YouTube + articles | Inside `pipeline.yml` (every 6h) | **Generate all** | `npm run worker -- generate-content` | `generate-content.yml` → variant `all` |
 | **Full pipeline** | Ingest → score → pick → generate | `pipeline.yml` — every 6h | **Full pipeline** | `npm run worker -- pipeline` | `pipeline.yml` → Run workflow |
-| **Export content** | Write approved assets to `content/` | — (local only) | **Export to disk** (local dev) | `npm run worker -- generate-content --export` | — (no CI; filesystem) |
+| **Export content** | Write approved assets to `content/` | — (local only) | **Export to disk** (local dev) | `npm run worker -- export-content` | — (no CI; filesystem) |
 | **Approve / reject opportunity** | Human status change | AI auto-approves one winner | Buttons on opportunity detail | — | — |
+
+### Planned (must follow same manual parity when built)
+
+| Step | Layer | Automatic | Manual required |
+|------|-------|-----------|-----------------|
+| **Render videos** | Video child | TBD cron | Dashboard + `render-videos` CLI + workflow |
+| **Publish video** | Video sub-child | TBD cron per platform | Dashboard + CLI + workflow per platform |
+| **Publish articles** | Article sub-child | TBD cron | Dashboard + CLI + workflow |
+| **Connect channel** | Phase 6 | — | Dashboard OAuth flow (one-time setup) |
+
+See [ROADMAP.md](./ROADMAP.md) Phase 4b–6.
 
 ---
 

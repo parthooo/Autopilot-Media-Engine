@@ -33,31 +33,36 @@ export default function GuidePage() {
         </section>
 
         <section className="panel guide-section">
-          <div className="panel-title">How the pipeline works</div>
+          <div className="panel-title">Platform hierarchy</div>
           <div className="guide-body">
+            <p>
+              The <Link href="/">Overview</Link> page shows the full tree. Each layer has a
+              status badge — <strong>Live</strong>, <strong>Partial</strong>, or{" "}
+              <strong>Planned</strong>.
+            </p>
             <ol className="guide-steps">
               <li>
-                <strong>Ingest</strong> — fetch trends from Hacker News, Google Trends,
-                Dev.to, GitHub Trending, Product Hunt, and YouTube
+                <strong>Parent — Niche Library</strong> — ingest, score, and analyze many
+                opportunities (Trends, Opportunities, Ingestion pages)
               </li>
               <li>
-                <strong>Score</strong> — rate each topic 0–100 on growth, competition,
-                monetization, USA audience, and evergreen potential
+                <strong>Gate — Pick ONE winner</strong> — Gemini approves a single niche per
+                cycle; all factory work uses this winner only
               </li>
               <li>
-                <strong>AI pick winner</strong> — Gemini analyzes the top 15 and approves{" "}
-                <em>one</em> niche; others are rejected or archived
+                <strong>Child — Video</strong> — pillar script + Shorts (live); MP4 render
+                (Phase 4b, planned)
               </li>
               <li>
-                <strong>Generate content</strong> — 1 pillar video script + 5 Shorts + 5
-                SEO articles for the approved winner (YouTube first)
+                <strong>Child — Article</strong> — SEO article cluster for the same winner
               </li>
               <li>
-                <strong>Upload to YouTube</strong> — record or TTS, then publish manually ($0)
+                <strong>Sub — Video publishers</strong> — YouTube, Instagram, Facebook,
+                TikTok, Reddit, Pinterest (Phase 5a, planned)
               </li>
               <li>
-                <strong>Publish articles</strong> (later) — deploy to an SEO site when domain
-                budget exists
+                <strong>Sub — Article publishers</strong> — SEO site when domain budget
+                exists (Phase 5b, planned)
               </li>
             </ol>
             <p className="meta-line">
@@ -76,8 +81,9 @@ export default function GuidePage() {
                   <Link href="/">Overview</Link>
                 </dt>
                 <dd>
-                  Start here. See stats, the current AI-approved niche, top opportunities,
-                  and pipeline buttons.
+                  Start here. The platform hierarchy tree shows Parent → Gate → Video +
+                  Article children → publisher sub-layers, with Live/Planned badges and
+                  manual pipeline buttons at each stage.
                 </dd>
               </div>
               <div className="guide-dl-row">
@@ -184,8 +190,8 @@ export default function GuidePage() {
               </div>
             </dl>
             <p className="meta-line muted">
-              Content page shows only generation buttons. Overview shows everything grouped
-              by stage. On Vercel, buttons dispatch GitHub Actions.
+              Overview nests buttons under each hierarchy layer. Content shows generation
+              buttons only. On Vercel, buttons dispatch GitHub Actions.
             </p>
           </div>
         </section>

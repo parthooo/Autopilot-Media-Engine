@@ -918,3 +918,315 @@ tbody tr:hover .col-sticky {
 .pipeline-controls .panel-spaced:last-child {
   margin-bottom: var(--space-md);
 }
+
+.pipeline-controls--inline .pipeline-hint {
+  margin-bottom: var(--space-2xs);
+}
+
+.pipeline-feedback {
+  margin-top: var(--space-2xs);
+}
+
+/* — Platform hierarchy (Overview) — */
+
+.hierarchy {
+  margin-bottom: var(--space-lg);
+}
+
+.hierarchy-intro {
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-md);
+  max-width: 52ch;
+}
+
+.hierarchy-layer {
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-2);
+  padding: var(--space-sm);
+  min-width: 0;
+}
+
+.hierarchy-layer--gate {
+  border-color: color-mix(in oklch, var(--color-accent) 35%, var(--color-rule));
+  background: color-mix(in oklch, var(--color-accent) 4%, var(--color-paper-2));
+}
+
+.hierarchy-layer--full {
+  margin-top: var(--space-md);
+  background: var(--color-paper);
+}
+
+.hierarchy-layer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-3xs);
+  flex-wrap: wrap;
+}
+
+.hierarchy-layer-meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.hierarchy-role {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+.hierarchy-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.hierarchy-desc {
+  margin-bottom: var(--space-sm);
+  max-width: 48ch;
+}
+
+.hierarchy-meta {
+  margin-bottom: var(--space-sm);
+}
+
+.hierarchy-stats {
+  margin-bottom: var(--space-sm);
+}
+
+.hierarchy-controls {
+  margin-top: var(--space-xs);
+}
+
+.hierarchy-connector {
+  width: 2px;
+  height: var(--space-sm);
+  margin: 0 auto;
+  background: var(--color-rule);
+}
+
+.hierarchy-connector--split {
+  position: relative;
+  height: var(--space-md);
+  width: auto;
+  background: transparent;
+}
+
+.hierarchy-connector--split::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 50%;
+  background: var(--color-rule);
+  transform: translateX(-50%);
+}
+
+.hierarchy-connector--split::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--color-rule);
+}
+
+.hierarchy-children {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+  position: relative;
+}
+
+.hierarchy-children::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: var(--color-rule);
+}
+
+.hierarchy-children .hierarchy-layer {
+  position: relative;
+}
+
+.hierarchy-children .hierarchy-layer::before {
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--space-md));
+  left: 50%;
+  width: 2px;
+  height: var(--space-md);
+  background: var(--color-rule);
+  transform: translateX(-50%);
+}
+
+.hierarchy-winner {
+  margin-bottom: var(--space-sm);
+}
+
+.hierarchy-winner-inner {
+  padding: var(--space-sm);
+}
+
+.hierarchy-winner--empty .empty-state {
+  padding: var(--space-sm);
+}
+
+.hierarchy-winner-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.hierarchy-winner-reason {
+  margin-top: var(--space-2xs);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.hierarchy-winner-angle {
+  margin-top: var(--space-2xs);
+  font-size: var(--text-sm);
+}
+
+.hierarchy-sub {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--color-rule);
+}
+
+.hierarchy-sub-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2xs);
+}
+
+.hierarchy-sub-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.hierarchy-platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  list-style: none;
+}
+
+.hierarchy-platform {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-rule);
+  color: var(--color-ink-2);
+  background: var(--color-paper-3);
+}
+
+.hierarchy-platform--planned {
+  opacity: 0.75;
+}
+
+.layer-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3xs);
+  padding: 0.12rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.layer-status--live {
+  background: color-mix(in oklch, var(--color-success) 18%, transparent);
+  color: var(--color-success);
+}
+
+.layer-status--partial {
+  background: color-mix(in oklch, var(--color-warning) 18%, transparent);
+  color: var(--color-warning);
+}
+
+.layer-status--planned {
+  background: color-mix(in oklch, var(--color-ink-2) 14%, transparent);
+  color: var(--color-ink-2);
+}
+
+.layer-status-note {
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+.layer-status-note::before {
+  content: "·";
+  margin: 0 0.2em;
+}
+
+.sidebar-section + .sidebar-section {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+}
+
+.sidebar-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-2);
+  padding: 0 var(--space-xs) var(--space-3xs);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .hierarchy-children {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hierarchy-children::before,
+  .hierarchy-children .hierarchy-layer::before,
+  .hierarchy-connector--split::after {
+    display: none;
+  }
+
+  .hierarchy-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-strip-item:nth-child(2) {
+    border-right: none;
+  }
+
+  .stat-strip-item:nth-child(odd) {
+    border-right: 1px solid var(--color-rule);
+  }
+}

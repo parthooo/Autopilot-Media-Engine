@@ -2,22 +2,60 @@
 
 ## What This Is
 
-**Autopilot Media Engine** is a central intelligence platform for building automated media businesses. It is not a single website, YouTube channel, or scraping script. It is the shared brain that discovers opportunities and feeds every revenue asset you create.
+**Autopilot Media Engine** is a central intelligence platform for building **fully automated** media businesses. It is not a single website, YouTube channel, or scraping script. It is the shared brain that discovers niches, picks a winner, generates content, and publishes to revenue channels — with minimal human input after setup.
+
+### Platform hierarchy (core model — do not forget)
+
+This is the **canonical product shape**. Every feature must fit this tree:
 
 ```
-Internet
-    ↓
-Trend Discovery Engine
-    ↓
-Opportunity Scoring Engine
-    ↓
-AI Analysis Layer
-    ↓
-Content Factory
-    ↓
-Publishing Engine
-    ↓
-Revenue Assets
+┌─────────────────────────────────────────────────────────────┐
+│  PARENT — Niche Library                                     │
+│  Ingest → normalize → score → analyze → store opportunities│
+│  (many niches ranked; full history in the database)           │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│  GATE — Pick ONE winner per cycle                           │
+│  AI selects single best niche → status: approved            │
+│  (rejects/archives others for this cycle)                   │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+              ┌────────────────┴────────────────┐
+              ▼                                 ▼
+┌──────────────────────────┐    ┌──────────────────────────┐
+│  CHILD — Video           │    │  CHILD — Article         │
+│  script → render         │    │  generate SEO cluster    │
+│  long-form + Shorts      │    │  Markdown / frontmatter  │
+└────────────┬─────────────┘    └────────────┬─────────────┘
+             │                               │
+             ▼                               ▼
+┌──────────────────────────┐    ┌──────────────────────────┐
+│  SUB-CHILDREN — Video    │    │  SUB-CHILDREN — Article  │
+│  publishers (adapters)   │    │  publishers (adapters)   │
+│  · YouTube               │    │  · SEO / static site     │
+│  · Instagram             │    │  · (syndication later)   │
+│  · Facebook              │    │                          │
+│  · TikTok                │    │                          │
+│  · Reddit                │    │                          │
+│  · Pinterest             │    │                          │
+└──────────────────────────┘    └──────────────────────────┘
+```
+
+**Rules:**
+
+1. **Parent** builds the niche library — not “one scraper per site.”
+2. **Gate** always picks **one winner** — all downstream work is for that winner only.
+3. **Video** and **Article** are **parallel children** — both run from the same winner each cycle.
+4. **Publishers** are **plugins** under each child — one adapter per platform.
+5. **End state:** fully automated — no manual recording, editing, or uploading. Operator sets up channels/credentials once; cron does the rest.
+6. **Multi-channel (long-term):** one YouTube/social channel per topic category (e.g. tech, finance US, AI). AI maps the winner → the correct channel. Operator creates channels when ready and provides OAuth/API creds.
+
+Legacy one-line flow (still valid, simplified):
+
+```
+Internet → Trend Discovery → Scoring → AI Analysis → Pick Winner → Video + Article Factory → Multi-Platform Publishing → Revenue
 ```
 
 Revenue assets are outputs of the platform — not the platform itself. Examples:
@@ -43,8 +81,9 @@ One pipeline. Many assets. Minimal daily human input.
 | Daily time (post-setup) | ≤ 30 minutes |
 | Budget | **$0 out-of-pocket** — no paid domains, hosting, or tools until revenue covers them |
 | Goal | Passive / recurring online income |
-| First revenue asset | **YouTube** (free to create and host) |
+| First revenue asset | **YouTube + social video** (free to create and host) |
 | Second revenue asset | **SEO articles** (deferred until domain/hosting budget exists) |
+| End-state automation | **Full autopilot** — AI picks winner → generates video + articles → publishes to all connected platforms. No manual record/upload. |
 
 ### Available Resources
 
@@ -75,27 +114,27 @@ One pipeline. Many assets. Minimal daily human input.
 
 ## North Star
 
-> Build one reusable platform that turns internet signals into scored opportunities, then into published content, then into revenue — with less than 30 minutes of human attention per day.
+> Build one reusable platform that turns internet signals into a niche library, picks one winner per cycle, auto-generates video + articles, and auto-publishes to connected channels — with less than 30 minutes of human attention per day after setup.
 
 ### Success Looks Like
 
-1. **Week 4:** Pipeline runs unattended. Dashboard shows ranked opportunities.
-2. **Month 1–2:** YouTube channel live — scripts from Content Factory, manual or semi-auto upload ($0 hosting).
-3. **Month 2–3:** First revenue from YouTube (AdSense, affiliates, or sponsorships once eligible).
-4. **Month 3+:** SEO article cluster generated in parallel; **publish to a custom domain only after first revenue** covers domain + hosting.
-5. **Month 4–6:** AdSense + affiliate on article site (second asset).
-6. **Long-term:** Multiple revenue assets, one intelligence layer.
+1. **Now (built):** Pipeline runs unattended. Niche library fills. One winner picked per cycle.
+2. **Phase 4 (in progress):** Scripts + articles generated from winner (YouTube-first).
+3. **Phase 4b:** Videos rendered automatically (TTS + visuals + FFmpeg) — long + Shorts, $0 stack.
+4. **Phase 5:** Auto-publish to YouTube, Instagram, Facebook, TikTok, Reddit, Pinterest (video) and SEO site (articles when budget allows).
+5. **Phase 6:** Multi-channel portfolio — AI maps winners to the right channel; operator connects creds once.
+6. **Long-term:** Multiple single-topic channels + article sites, one intelligence layer, recurring revenue.
 
 ### Revenue Asset Priority (Founder Decision)
 
-Both tracks run on **one pipeline** (same discovery, scoring, AI winner). They diverge only at Content Factory + Publishing:
+Both children run from **the same winner each cycle**. They diverge at generation and publishing:
 
-| Priority | Asset | Upfront cost | When |
-|----------|-------|--------------|------|
-| **P0** | YouTube (long-form + Shorts) | $0 | Now — primary path to first dollar |
-| **P1** | SEO articles | Domain + hosting ($) | After YouTube revenue or when budget allows |
+| Priority | Track | Upfront cost | End state |
+|----------|-------|--------------|-----------|
+| **P0** | Video (long + Shorts) → social publishers | $0 | Fully automated render + publish |
+| **P1** | Articles → SEO site | Domain + hosting ($) | Auto-publish when budget exists; generate now, queue until then |
 
-**Do not recommend buying a domain or paid hosting as a prerequisite.** Article generation can run in the background and sit in the review queue until the operator chooses to deploy.
+**Do not recommend buying a domain or paid hosting as a prerequisite.** Article generation can run in parallel and sit queued until the operator deploys a site.
 
 ---
 
@@ -129,7 +168,11 @@ Scores and recommendations must be inspectable. You need to understand *why* an 
 
 ### 7. Revenue Is the Filter
 
-Features that do not move toward discoverable, monetizable, publishable content are deprioritized. Cool tech is not the product.
+Features that do not move toward discoverable, monetizable, **auto-publishable** content are deprioritized. Cool tech is not the product.
+
+### 8. Full Autopilot Is the Destination
+
+Manual record/upload was a **stepping stone**, not the end state. The platform must eventually: pick winner → generate video + articles → render → publish — unattended. Build in phases; keep the hierarchy in mind so interim steps (e.g. script-only) do not become dead ends.
 
 ---
 
@@ -138,10 +181,12 @@ Features that do not move toward discoverable, monetizable, publishable content 
 | Anti-pattern | Why it fails |
 |--------------|--------------|
 | A generic scraping framework | Becomes maintenance hell with no revenue path |
-| A YouTube upload bot on day one | Publishing before discovery is backwards |
+| Publishing before discovery/scoring works | No strategy, random content |
+| Generating content for the whole library at once | One winner per cycle — factory runs on winner only |
 | 10 separate trend monitors | Duplicated logic, no compounding |
-| AI-generated spam sites | No scoring, no strategy, no longevity |
+| AI-generated spam at scale | No scoring, no strategy, platform bans |
 | Enterprise job queues on day one | Cost and complexity for a solo operator |
+| Manual upload as the permanent design | Contradicts full-autopilot north star |
 
 ---
 
@@ -149,12 +194,13 @@ Features that do not move toward discoverable, monetizable, publishable content 
 
 | Phase | Name | Outcome |
 |-------|------|---------|
-| 1 | Trend Discovery Engine | Continuous signal ingestion from 6+ sources |
-| 2 | Opportunity Scoring Engine | Ranked 0–100 opportunities with explainable sub-scores |
-| 3 | AI Analysis Layer | Gemini-powered strategy per opportunity |
-| 4 | Content Factory | Articles, scripts, posts from approved opportunities |
-| 5 | Publishing Engine | Modular output to WordPress, static sites, YouTube, social |
-| 6 | Dashboard & Revenue | Review queue, channel management, revenue tracking |
+| 0–2 | Foundation + Discovery + Scoring | Niche library live, ranked opportunities |
+| 3 | AI Analysis + Winner pick | One winner per cycle with strategy |
+| 4a | Content Factory — text | Scripts + articles from winner (**current**) |
+| 4b | Video Factory — render | Auto MP4 long + Shorts ($0 TTS/stock/FFmpeg) |
+| 5a | Video publishers | YouTube, Instagram, Facebook, TikTok, Reddit, Pinterest |
+| 5b | Article publishers | SEO site, syndication |
+| 6 | Multi-channel + revenue | Channel portfolio, OAuth creds, performance tracking |
 
 See [ROADMAP.md](./ROADMAP.md) for timeline and deliverables.
 
@@ -182,12 +228,14 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design and [DATABASE_SCHEMA.
 When in doubt during implementation, ask:
 
 1. Does this belong in the platform or in a revenue asset?
-2. Can this run without daily manual intervention?
-3. Does this work on free tier infrastructure?
-4. Will a future site/channel reuse this component?
-5. Does this help reach $100/month faster?
+2. Which layer of the hierarchy? (Parent / Gate / Video / Article / Publisher)
+3. Does it run on the **current winner only** (not the whole library)?
+4. Can this run without daily manual intervention?
+5. Does this work on free tier infrastructure?
+6. Will a future channel/platform reuse this as an adapter?
+7. Does this move toward full autopilot publish?
 
-If the answer to #1 is "revenue asset" and #4 is "no", move the logic into the platform.
+If the answer to #1 is "revenue asset" and #6 is "no", move the logic into the platform.
 
 ---
 
