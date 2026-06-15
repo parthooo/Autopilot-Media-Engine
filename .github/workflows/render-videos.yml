@@ -1,0 +1,70 @@
+name: Render Videos
+
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: "Which scripts to render"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - youtube-only
+          - shorts-only
+      force:
+        description: "Re-render completed videos"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Render videos
+        run: |
+          VARIANT="${{ github.event.inputs.variant || 'all' }}"
+          FORCE="${{ github.event.inputs.force || 'false' }}"
+          FLAGS=""
+          if [ "$VARIANT" = "youtube-only" ]; then FLAGS="--youtube-only"; fi
+          if [ "$VARIANT" = "shorts-only" ]; then FLAGS="--shorts-only"; fi
+          if [ "$FORCE" = "true" ]; then FLAGS="$FLAGS --force"; fi
+          npm run worker -- render-videos $FLAGS
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+
+      - name: Upload rendered MP4s
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rendered-videos-${{ github.run_id }}
+          path: renders/
+          retention-days: 14
+          if-no-files-found: ignore

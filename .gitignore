@@ -36,6 +36,9 @@ Thumbs.db
 # Generated content exports (local worker --export)
 /content/
 
+# Rendered MP4 files (local worker render-videos)
+/renders/
+
 # Vercel
 .vercel
 

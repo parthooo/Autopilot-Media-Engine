@@ -1,15 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PIPELINE_GROUPS, stepKey } from "../lib/pipeline-steps";
+import { ButtonContent } from "./spinner";
+import { runPipelineJob, hasRunningJobs, subscribeJobs } from "../lib/pipeline-jobs";
 
 /**
  * @param {object} props
  * @param {boolean} [props.compact]
- * @param {string} [props.filterGroup] - Show only one group: discovery | selection | content | full
- * @param {'video' | 'article' | 'both'} [props.filterTrack] - Filter content steps by track
- * @param {boolean} [props.inline] - Buttons only, no panel wrapper (for hierarchy layout)
+ * @param {string} [props.filterGroup]
+ * @param {'video' | 'article' | 'both'} [props.filterTrack]
+ * @param {boolean} [props.inline]
+ * @param {"stack" | "grid"} [props.layout]
+ * @param {"2-3"} [props.gridLayout] — row 1: two half cards; row 2: three thirds
  * @param {string} [props.className]
  */
 export function PipelineControls({
@@ -17,12 +21,21 @@ export function PipelineControls({
   filterGroup = null,
   filterTrack = null,
   inline = false,
+  layout = null,
+  gridLayout = null,
   className = "",
 }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(null);
+  const [activeKey, setActiveKey] = useState(null);
+  const [anyRunning, setAnyRunning] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const sync = () => setAnyRunning(hasRunningJobs());
+    sync();
+    return subscribeJobs(sync);
+  }, []);
 
   let groups = filterGroup
     ? PIPELINE_GROUPS.filter((g) => g.id === filterGroup)
@@ -40,46 +53,67 @@ export function PipelineControls({
     }));
   }
 
-  async function runStep(step, variant, localOnly) {
+  async function runStep(step, variant, localOnly, stepLabel) {
     const loadingKey = stepKey(step, variant);
-    setLoading(loadingKey);
+    setActiveKey(loadingKey);
     setMessage(null);
     setError(null);
 
+    const body = { step, mode: "auto", variant };
+    if (step === "render-videos") body.force = true;
+
     try {
-      const res = await fetch("/api/pipeline/trigger", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ step, mode: "auto", variant }),
-      });
+      await runPipelineJob(
+        {
+          step,
+          label: stepLabel || step,
+          href: step === "render-videos" ? "/content" : undefined,
+        },
+        async () => {
+          const res = await fetch("/api/pipeline/trigger", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Pipeline failed");
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Pipeline failed");
 
-      const result = data.data?.result;
-      if (step === "generate-content" && result?.youtube) {
-        const yt = result.youtube.generated || 0;
-        const art = result.articles?.generated || 0;
-        setMessage(
-          data.data?.message ||
-            `Generated ${yt} YouTube asset${yt === 1 ? "" : "s"}${art ? ` + ${art} articles` : ""}`
-        );
-      } else if (step === "export-content" && result?.exportPath) {
-        setMessage(`Exported to ${result.exportPath}`);
-      } else if (localOnly && data.data?.mode === "github") {
-        setMessage(
-          "Export runs locally only — use: npm run worker -- export-content"
-        );
-      } else {
-        setMessage(data.data?.message || `Completed: ${step}`);
-      }
-      router.refresh();
+          const result = data.data?.result;
+          let msg = data.data?.message || `Completed: ${step}`;
+
+          if (step === "generate-content" && result?.youtube) {
+            const yt = result.youtube.generated || 0;
+            const art = result.articles?.generated || 0;
+            msg = `Generated ${yt} YouTube asset${yt === 1 ? "" : "s"}${art ? ` + ${art} articles` : ""}`;
+          } else if (step === "export-content" && result?.exportPath) {
+            msg = `Exported to ${result.exportPath}`;
+          } else if (step === "render-videos" && result?.items) {
+            msg = `Rendered ${result.rendered || 0} video${result.rendered === 1 ? "" : "s"}`;
+          } else if (localOnly && data.data?.mode === "github") {
+            msg =
+              step === "render-videos"
+                ? "Render runs locally only — use: npm run worker -- render-videos"
+                : "Export runs locally only — use: npm run worker -- export-content";
+          }
+
+          setMessage(msg);
+          router.refresh();
+          return { message: msg };
+        }
+      );
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(null);
+      setActiveKey(null);
     }
   }
+
+  const busy = anyRunning || activeKey !== null;
+
+  const useGrid =
+    layout === "grid" ||
+    (layout !== "stack" && !filterGroup && !compact && !inline && groups.length > 1);
 
   const controlsBody = groups.map((group) => (
     <div key={group.id} className="pipeline-group">
@@ -96,17 +130,22 @@ export function PipelineControls({
       <div className="btn-row">
         {group.steps.map((s) => {
           const key = stepKey(s.step, s.variant);
+          const isLoading = activeKey === key || (anyRunning && activeKey === null);
           return (
             <button
               key={key}
               type="button"
-              className={`btn ${s.primary ? "btn-primary" : ""}`}
-              disabled={loading !== null}
-              data-state={loading === key ? "loading" : undefined}
-              onClick={() => runStep(s.step, s.variant, s.localOnly)}
+              className={`btn btn-with-spinner ${s.primary ? "btn-primary" : ""}`}
+              disabled={busy}
+              data-state={activeKey === key ? "loading" : undefined}
+              onClick={() => runStep(s.step, s.variant, s.localOnly, s.label)}
               title={s.desc}
             >
-              {loading === key ? "Running…" : s.label}
+              <ButtonContent
+                loading={activeKey === key}
+                loadingLabel="Running…"
+                label={s.label}
+              />
             </button>
           );
         })}
@@ -129,16 +168,30 @@ export function PipelineControls({
   }
 
   return (
-    <div className={`pipeline-controls ${className}`.trim()}>
+    <div
+      className={[
+        "pipeline-controls",
+        useGrid && "pipeline-controls--grid",
+        gridLayout === "2-3" && "pipeline-controls--grid-2-3",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {groups.map((group) => (
         <section
           key={group.id}
-          className={`panel${compact && groups.length === 1 ? "" : " panel-spaced"}`}
+          className={`panel pipeline-panel pipeline-panel--${group.id}${
+            compact && groups.length === 1 ? "" : useGrid ? "" : " panel-spaced"
+          }`}
         >
           <div className="panel-title">{group.title}</div>
           <div className="panel-body">
-            {!compact && (
-              <p className="muted u-mb-sm">
+            {group.subtitle && (
+              <p className="pipeline-panel-subtitle muted">{group.subtitle}</p>
+            )}
+            {!compact && group.hint && (
+              <p className="pipeline-panel-hint muted">
                 <span className="automation-badge">Auto</span> {group.hint}
               </p>
             )}
@@ -149,13 +202,17 @@ export function PipelineControls({
                   <button
                     key={key}
                     type="button"
-                    className={`btn ${s.primary ? "btn-primary" : ""}`}
-                    disabled={loading !== null}
-                    data-state={loading === key ? "loading" : undefined}
-                    onClick={() => runStep(s.step, s.variant, s.localOnly)}
+                    className={`btn btn-with-spinner ${s.primary ? "btn-primary" : ""}`}
+                    disabled={busy}
+                    data-state={activeKey === key ? "loading" : undefined}
+                    onClick={() => runStep(s.step, s.variant, s.localOnly, s.label)}
                     title={s.desc}
                   >
-                    {loading === key ? "Running…" : s.label}
+                    <ButtonContent
+                      loading={activeKey === key}
+                      loadingLabel="Running…"
+                      label={s.label}
+                    />
                   </button>
                 );
               })}
@@ -165,7 +222,7 @@ export function PipelineControls({
       ))}
 
       {(message || error) && (
-        <div className="panel panel-spaced">
+        <div className="panel pipeline-feedback-panel">
           {message && <p className="meta-line message-success">{message}</p>}
           {error && <p className="meta-line message-error">{error}</p>}
         </div>

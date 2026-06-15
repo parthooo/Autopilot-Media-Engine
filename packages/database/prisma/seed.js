@@ -4,21 +4,18 @@ const prisma = new PrismaClient();
 
 const sources = [
   {
+    name: "YouTube",
+    slug: "youtube",
+    isActive: true,
+    scrapeIntervalHours: 12,
+    config: { region: "US", maxResults: 25 },
+  },
+  {
     name: "Hacker News",
     slug: "hacker-news",
     isActive: true,
     scrapeIntervalHours: 6,
     config: { limit: 50 },
-  },
-  {
-    name: "Reddit",
-    slug: "reddit",
-    isActive: false,
-    scrapeIntervalHours: 6,
-    config: {
-      subreddits: ["technology", "programming", "entrepreneur", "SideProject"],
-      limit: 25,
-    },
   },
   {
     name: "Dev.to",
@@ -53,11 +50,14 @@ const sources = [
     config: {},
   },
   {
-    name: "YouTube",
-    slug: "youtube",
-    isActive: true,
-    scrapeIntervalHours: 12,
-    config: { region: "US", maxResults: 25 },
+    name: "Reddit",
+    slug: "reddit",
+    isActive: false,
+    scrapeIntervalHours: 6,
+    config: {
+      subreddits: ["technology", "programming", "entrepreneur", "SideProject"],
+      limit: 25,
+    },
   },
 ];
 

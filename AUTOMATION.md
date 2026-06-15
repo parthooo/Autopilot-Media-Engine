@@ -21,12 +21,14 @@ See also: [ARCHITECTURE.md](./ARCHITECTURE.md) (worker pipeline), [SETUP.md](./S
 |------|----------------|------------------------|--------------------|--------------|----------------|
 | **Ingest all** | Fetch trends from active sources | `ingest.yml` — every 6h | **Run ingest** on Overview / Ingestion / Content | `npm run worker -- ingest-all` | `ingest.yml` → Run workflow |
 | **Score** | Calculate opportunity scores | `score.yml` — 30 min after each 6h block | **Run score** | `npm run worker -- score` | `score.yml` → Run workflow |
+| **Prune stale library** | Delete rejected / low-score niches older than 30d | `prune-library.yml` — daily 03:00 UTC | **Prune stale (30d)** on Trends / Opportunities | `npm run worker -- prune-library` | `prune-library.yml` → Run workflow |
 | **AI pick winner** | Gemini approves one niche | Inside `pipeline.yml` (every 6h) | **AI pick** | `npm run worker -- auto-select` | `auto-select.yml` → Run workflow |
 | **Generate YouTube** | 1 pillar script + 5 Shorts | Inside `pipeline.yml` (every 6h) | **Generate YouTube** | `npm run worker -- generate-content --youtube-only` | `generate-content.yml` → variant `youtube-only` |
 | **Generate articles** | 5 SEO articles (publish later) | Inside `pipeline.yml` (every 6h) | **Generate articles** | `npm run worker -- generate-content --articles-only` | `generate-content.yml` → variant `articles-only` |
 | **Generate all content** | YouTube + articles | Inside `pipeline.yml` (every 6h) | **Generate all** | `npm run worker -- generate-content` | `generate-content.yml` → variant `all` |
 | **Full pipeline** | Ingest → score → pick → generate | `pipeline.yml` — every 6h | **Full pipeline** | `npm run worker -- pipeline` | `pipeline.yml` → Run workflow |
 | **Export content** | Write approved assets to `content/` | — (local only) | **Export to disk** (local dev) | `npm run worker -- export-content` | — (no CI; filesystem) |
+| **Render videos** | Scripts → MP4 (long + Shorts) | `render-videos.yml` — manual dispatch | **Render videos** on Content | `npm run worker -- render-videos` | `render-videos.yml` → Run workflow |
 | **Approve / reject opportunity** | Human status change | AI auto-approves one winner | Buttons on opportunity detail | — | — |
 | **Backfill winner video strategy** | Patch missing pillar + 5 Shorts on approved analysis | — (on-demand repair) | — | `npm run worker -- backfill-winner-strategy` | — |
 
@@ -34,7 +36,6 @@ See also: [ARCHITECTURE.md](./ARCHITECTURE.md) (worker pipeline), [SETUP.md](./S
 
 | Step | Layer | Automatic | Manual required |
 |------|-------|-----------|-----------------|
-| **Render videos** | Video child | TBD cron | Dashboard + `render-videos` CLI + workflow |
 | **Publish video** | Video sub-child | TBD cron per platform | Dashboard + CLI + workflow per platform |
 | **Publish articles** | Article sub-child | TBD cron | Dashboard + CLI + workflow |
 | **Connect channel** | Phase 6 | — | Dashboard OAuth flow (one-time setup) |
@@ -49,7 +50,9 @@ See [ROADMAP.md](./ROADMAP.md) Phase 4b–6.
 |------|----------|
 | **Overview** (`/`) | Full pipeline panel — all manual triggers |
 | **Ingestion** (`/ingestion`) | Same pipeline panel + run history |
-| **Content** (`/content`) | Content generation panel (YouTube / articles / all / export) |
+| **Trends** (`/trends`) | Library filters + **Prune stale (30d)** |
+| **Opportunities** (`/opportunities`) | Library filters + **Prune stale (30d)** |
+| **Content** (`/content`) | Content generation + **Render videos** (spawns worker locally) |
 | **Opportunity detail** | Approve / Reject / Archive |
 | **GitHub → Actions** | Run any workflow when dashboard unavailable |
 
@@ -72,6 +75,7 @@ When you click a dashboard button:
 ```
 :00  ingest.yml + pipeline.yml  (every 6 hours)
 :30  score.yml                 (30 min after ingest block)
+:00  prune-library.yml         (daily at 03:00 UTC)
 ```
 
 `auto-select` and `generate-content` are **not** separate crons — they run inside `pipeline.yml`. They still have **dedicated manual buttons** and **standalone GitHub workflows** for on-demand use.

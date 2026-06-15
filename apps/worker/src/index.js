@@ -23,6 +23,24 @@ if (fs.existsSync(envPath)) {
   }
 }
 
+const repoRoot = path.resolve(__dirname, "../../..");
+const { execFileSync } = require("child_process");
+
+/** Fresh Prisma client on disk before any @ame/database import. */
+function syncPrismaClient() {
+  try {
+    execFileSync("npm", ["run", "db:generate"], {
+      cwd: repoRoot,
+      env: process.env,
+      stdio: "pipe",
+    });
+  } catch (error) {
+    console.warn(`Prisma generate skipped: ${error.message}`);
+  }
+}
+
+syncPrismaClient();
+
 const {
   ingestSource,
   ingestAll,
@@ -31,9 +49,11 @@ const {
   generateContent,
   exportApprovedContent,
   backfillWinnerStrategy,
+  renderVideos,
+  pruneLibrary,
   runFullPipeline,
 } = require("@ame/pipeline");
-const { prisma, ensureDatabaseReady } = require("@ame/database");
+const { prisma, ensurePlatformReady } = require("@ame/database");
 
 const [command, ...args] = process.argv.slice(2);
 
@@ -44,7 +64,7 @@ function getFlag(name) {
 
 async function main() {
   if (command && command !== "help") {
-    await ensureDatabaseReady();
+    await ensurePlatformReady();
   }
 
   switch (command) {
@@ -117,6 +137,26 @@ async function main() {
       break;
     }
 
+    case "render-videos": {
+      const force = args.includes("--force");
+      const youtubeOnly = args.includes("--youtube-only");
+      const shortsOnly = args.includes("--shorts-only");
+      const assetId = getFlag("asset");
+      const result = await renderVideos({ force, youtubeOnly, shortsOnly, assetId });
+      console.log(JSON.stringify(result, null, 2));
+      if (!result.success && result.rendered === 0 && !result.skipped) {
+        process.exit(1);
+      }
+      break;
+    }
+
+    case "prune-library": {
+      const dryRun = args.includes("--dry-run");
+      const result = await pruneLibrary({ dryRun });
+      console.log(JSON.stringify(result, null, 2));
+      break;
+    }
+
     case "pipeline": {
       const result = await runFullPipeline();
       console.log(JSON.stringify(result, null, 2));
@@ -140,6 +180,13 @@ Commands:
   generate-content --youtube-only   Pillar + 5 Shorts only
   generate-content --articles-only  5 SEO articles only
   export-content           Export existing approved content to content/
+  render-videos            Render approved scripts to MP4 (long + Shorts)
+  render-videos --youtube-only   Pillar long-form only
+  render-videos --shorts-only    Shorts only
+  render-videos --force          Re-render completed videos
+  render-videos --asset=<uuid>   Render one script by ID
+  prune-library            Delete stale rejected/low-score niches (30d retention)
+  prune-library --dry-run  Preview prune candidates without deleting
   pipeline                 Full automation: ingest → score → select → generate
 
 Every command above has a matching dashboard button — see AUTOMATION.md

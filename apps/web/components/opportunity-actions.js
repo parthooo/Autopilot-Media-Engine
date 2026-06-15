@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ButtonContent } from "./spinner";
 
 const ACTIONS = [
   { status: "approved", label: "Approve", className: "btn-primary" },
@@ -40,12 +41,16 @@ export function OpportunityActions({ opportunityId, currentStatus }) {
           <button
             key={action.status}
             type="button"
-            className={`btn ${action.className}`}
+            className={`btn btn-with-spinner ${action.className}`}
             disabled={loading !== null || currentStatus === action.status}
             data-state={loading === action.status ? "loading" : undefined}
             onClick={() => updateStatus(action.status)}
           >
-            {loading === action.status ? "Saving…" : action.label}
+            <ButtonContent
+              loading={loading === action.status}
+              loadingLabel="Saving…"
+              label={action.label}
+            />
           </button>
         ))}
       </div>

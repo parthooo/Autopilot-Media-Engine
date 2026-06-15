@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "postinstall": "npm run db:generate",
-    "dev": "dotenv -e .env -- npm run dev -w @ame/web",
+    "dev": "npm run db:generate && dotenv -e .env -- npm run dev -w @ame/web",
     "build": "npm run db:generate && npm run build -w @ame/web",
     "worker": "node apps/worker/src/index.js",
     "db:generate": "dotenv -e .env -- npm run generate -w @ame/database",

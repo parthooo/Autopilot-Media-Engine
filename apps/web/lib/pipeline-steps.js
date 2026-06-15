@@ -3,7 +3,7 @@
  * Used by dashboard buttons — must stay in sync with AUTOMATION.md and worker CLI.
  */
 
-/** @typedef {"ingest" | "score" | "auto-select" | "generate-content" | "export-content" | "full"} PipelineStep */
+/** @typedef {"ingest" | "score" | "auto-select" | "generate-content" | "export-content" | "render-videos" | "full"} PipelineStep */
 
 export const PIPELINE_GROUPS = [
   {
@@ -23,6 +23,12 @@ export const PIPELINE_GROUPS = [
         desc: "Recalculate opportunity scores",
         workflow: "score.yml",
       },
+      {
+        step: "prune-library",
+        label: "Prune stale",
+        desc: "Delete rejected and low-score niches older than 30 days",
+        workflow: "prune-library.yml",
+      },
     ],
   },
   {
@@ -39,42 +45,62 @@ export const PIPELINE_GROUPS = [
     ],
   },
   {
-    id: "content",
-    title: "Content generation",
-    hint: "Automatic: part of full pipeline every 6h · YouTube-first ($0)",
+    id: "content-video",
+    title: "Video factory",
+    subtitle: "Pillar script, Shorts, export, and MP4 renders",
+    hint: "Automatic: part of full pipeline every 6h · render is local (ffmpeg)",
     steps: [
       {
         step: "generate-content",
         label: "Generate YouTube",
         variant: "youtube-only",
-        track: "video",
-        desc: "1 pillar script + 5 Shorts",
+        desc: "1 pillar script + 5 Shorts for the approved winner",
         workflow: "generate-content.yml",
         primary: true,
-      },
-      {
-        step: "generate-content",
-        label: "Generate articles",
-        variant: "articles-only",
-        track: "article",
-        desc: "5 SEO articles (publish later when domain budget exists)",
-        workflow: "generate-content.yml",
-        primary: true,
-      },
-      {
-        step: "generate-content",
-        label: "Generate all",
-        variant: "all",
-        track: "both",
-        desc: "YouTube + Shorts + articles",
-        workflow: "generate-content.yml",
       },
       {
         step: "export-content",
         label: "Export to disk",
-        track: "video",
         desc: "Write approved scripts to content/ folder (local dev only)",
         localOnly: true,
+      },
+      {
+        step: "render-videos",
+        label: "Render videos",
+        variant: "all",
+        desc: "Turn approved scripts into MP4 files (requires ffmpeg, local)",
+        localOnly: true,
+        primary: true,
+      },
+      {
+        step: "render-videos",
+        label: "Render pillar",
+        variant: "youtube-only",
+        desc: "Render long-form YouTube script only",
+        localOnly: true,
+      },
+      {
+        step: "render-videos",
+        label: "Render Shorts",
+        variant: "shorts-only",
+        desc: "Render all Shorts scripts",
+        localOnly: true,
+      },
+    ],
+  },
+  {
+    id: "content-article",
+    title: "Article factory",
+    subtitle: "SEO article cluster — publish later when domain budget exists",
+    hint: "Automatic: part of full pipeline every 6h",
+    steps: [
+      {
+        step: "generate-content",
+        label: "Generate articles",
+        variant: "articles-only",
+        desc: "5 SEO articles for the approved winner",
+        workflow: "generate-content.yml",
+        primary: true,
       },
     ],
   },

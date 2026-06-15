@@ -1,5 +1,5 @@
 const { prisma } = require("@ame/database");
-const { normalizeTopic } = require("@ame/core");
+const { normalizeTopic, sortBySourceSlugOrder } = require("@ame/core");
 const { getAdapter } = require("@ame/ingest");
 
 async function ingestSource(sourceSlug) {
@@ -104,7 +104,9 @@ async function ingestSource(sourceSlug) {
 }
 
 async function ingestAll() {
-  const sources = await prisma.source.findMany({ where: { isActive: true } });
+  const sources = sortBySourceSlugOrder(
+    await prisma.source.findMany({ where: { isActive: true } })
+  );
   const results = [];
 
   for (const source of sources) {

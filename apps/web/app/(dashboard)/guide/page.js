@@ -235,18 +235,23 @@ export default function GuidePage() {
               </thead>
               <tbody>
                 <tr>
+                  <td>YouTube</td>
+                  <td>Trending videos in the US</td>
+                  <td className="muted">API key</td>
+                </tr>
+                <tr>
                   <td>Hacker News</td>
                   <td>Tech stories and startup discussions</td>
                   <td className="muted">None</td>
                 </tr>
                 <tr>
-                  <td>Google Trends</td>
-                  <td>What people are searching for in the US</td>
+                  <td>Dev.to</td>
+                  <td>Developer and startup articles</td>
                   <td className="muted">None</td>
                 </tr>
                 <tr>
-                  <td>Dev.to</td>
-                  <td>Developer and startup articles</td>
+                  <td>Google Trends</td>
+                  <td>What people are searching for in the US</td>
                   <td className="muted">None</td>
                 </tr>
                 <tr>
@@ -258,11 +263,6 @@ export default function GuidePage() {
                   <td>Product Hunt</td>
                   <td>New product launches</td>
                   <td className="muted">None</td>
-                </tr>
-                <tr>
-                  <td>YouTube</td>
-                  <td>Trending videos in the US</td>
-                  <td className="muted">API key</td>
                 </tr>
                 <tr>
                   <td>Reddit</td>

@@ -1,20 +1,20 @@
+const { youtubeAdapter } = require("./adapters/youtube");
 const { hackerNewsAdapter } = require("./adapters/hacker-news");
-const { redditAdapter } = require("./adapters/reddit");
-const { googleTrendsAdapter } = require("./adapters/google-trends");
 const { devToAdapter } = require("./adapters/dev-to");
+const { googleTrendsAdapter } = require("./adapters/google-trends");
 const { githubTrendingAdapter } = require("./adapters/github-trending");
 const { productHuntAdapter } = require("./adapters/product-hunt");
-const { youtubeAdapter } = require("./adapters/youtube");
+const { redditAdapter } = require("./adapters/reddit");
 
 /** @type {Map<string, import('./types').IngestAdapter>} */
 const adapters = new Map([
+  [youtubeAdapter.sourceSlug, youtubeAdapter],
   [hackerNewsAdapter.sourceSlug, hackerNewsAdapter],
-  [redditAdapter.sourceSlug, redditAdapter],
-  [googleTrendsAdapter.sourceSlug, googleTrendsAdapter],
   [devToAdapter.sourceSlug, devToAdapter],
+  [googleTrendsAdapter.sourceSlug, googleTrendsAdapter],
   [githubTrendingAdapter.sourceSlug, githubTrendingAdapter],
   [productHuntAdapter.sourceSlug, productHuntAdapter],
-  [youtubeAdapter.sourceSlug, youtubeAdapter],
+  [redditAdapter.sourceSlug, redditAdapter],
 ]);
 
 /**
