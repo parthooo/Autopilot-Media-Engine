@@ -10,7 +10,8 @@ import { dispatchGitHubWorkflow } from "../../../../lib/github-dispatch";
 import { jsonResponse, errorResponse } from "../../../../lib/api-response";
 import { runWorkerCommand, renderWorkerArgs, formatWorkerError } from "../../../../lib/run-worker-cli";
 
-export const maxDuration = 600;
+// Hobby plan allows max 60s; heavy work runs on GitHub Actions or local worker.
+export const maxDuration = 60;
 
 const STEPS = {
   ingest: { fn: ingestAll, workflow: "ingest.yml" },
