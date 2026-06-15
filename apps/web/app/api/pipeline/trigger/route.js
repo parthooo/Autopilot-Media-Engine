@@ -3,17 +3,20 @@ import {
   scoreOpportunities,
   autoSelectWinner,
   generateContent,
-  exportApprovedContent,
+  pruneLibrary,
   runFullPipeline,
 } from "@ame/pipeline";
 import { dispatchGitHubWorkflow } from "../../../../lib/github-dispatch";
 import { jsonResponse, errorResponse } from "../../../../lib/api-response";
+import { runWorkerCommand, renderWorkerArgs, formatWorkerError } from "../../../../lib/run-worker-cli";
 
-export const maxDuration = 300;
+// Hobby plan allows max 60s; heavy work runs on GitHub Actions or local worker.
+export const maxDuration = 60;
 
 const STEPS = {
   ingest: { fn: ingestAll, workflow: "ingest.yml" },
   score: { fn: scoreOpportunities, workflow: "score.yml" },
+  "prune-library": { fn: pruneLibrary, workflow: "prune-library.yml" },
   "auto-select": { fn: autoSelectWinner, workflow: "auto-select.yml" },
   "generate-content": {
     fn: (options = {}) => generateContent({ autoApprove: true, ...options }),
@@ -21,8 +24,19 @@ const STEPS = {
     workflowInputs: (body) => ({ variant: body.variant || "all" }),
   },
   "export-content": {
-    fn: exportApprovedContent,
+    workerCommand: "export-content",
     localOnly: true,
+    spawnWorker: true,
+  },
+  "render-videos": {
+    workerCommand: "render-videos",
+    workflow: "render-videos.yml",
+    workflowInputs: (body) => ({
+      variant: body.variant || "all",
+      force: body.force ? "true" : "false",
+    }),
+    localOnly: true,
+    spawnWorker: true,
   },
   full: { fn: runFullPipeline, workflow: "pipeline.yml" },
 };
@@ -50,10 +64,11 @@ export async function POST(request) {
     }
 
     if (config.localOnly && process.env.VERCEL === "1") {
-      return errorResponse(
-        "Export to disk is local-only. Run: npm run worker -- export-content",
-        400
-      );
+      const hint =
+        step === "render-videos"
+          ? "Video render requires ffmpeg locally. Run: npm run worker -- render-videos"
+          : "Export to disk is local-only. Run: npm run worker -- export-content";
+      return errorResponse(hint, 400);
     }
 
     const workflowInputs = config.workflowInputs?.(body);
@@ -72,10 +87,11 @@ export async function POST(request) {
 
     if (process.env.VERCEL === "1" && !process.env.FORCE_INLINE_PIPELINE) {
       if (config.localOnly) {
-        return errorResponse(
-          "Export to disk is local-only. Run: npm run worker -- export-content",
-          400
-        );
+        const hint =
+          step === "render-videos"
+            ? "Video render requires ffmpeg locally. Run: npm run worker -- render-videos"
+            : "Export to disk is local-only. Run: npm run worker -- export-content";
+        return errorResponse(hint, 400);
       }
       const dispatch = await dispatchGitHubWorkflow(config.workflow, workflowInputs);
       if (dispatch.dispatched) {
@@ -88,8 +104,24 @@ export async function POST(request) {
       }
     }
 
-    const fnArgs =
-      step === "generate-content" ? getGenerateOptions(body) : undefined;
+    // Fresh worker process: up-to-date Prisma client, auto db:push if schema drifted
+    if (config.spawnWorker) {
+      const args =
+        step === "render-videos" ? renderWorkerArgs(body) : [];
+      const result = await runWorkerCommand(config.workerCommand, args);
+      if (body.force && result.skipped > 0 && result.rendered === 0) {
+        return errorResponse(
+          "Re-render was skipped unexpectedly. Restart dev server and retry, or run: npm run worker -- render-videos --force --asset=<id>",
+          400
+        );
+      }
+      if (!result.success) {
+        return errorResponse(formatWorkerError(result), 400);
+      }
+      return jsonResponse({ mode: "worker", step, result });
+    }
+
+    const fnArgs = step === "generate-content" ? getGenerateOptions(body) : undefined;
     const result = await config.fn(fnArgs);
     return jsonResponse({ mode: "inline", step, result });
   } catch (error) {

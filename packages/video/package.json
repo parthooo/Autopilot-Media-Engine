@@ -1,0 +1,10 @@
+{
+  "name": "@ame/video",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.js",
+  "dependencies": {
+    "@ame/core": "*",
+    "msedge-tts": "^2.0.5"
+  }
+}

@@ -38,10 +38,17 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const { ensureDatabaseReady: connectWithRetry } = require("./ensure-ready");
+const { ensureSchemaReady } = require("./ensure-schema");
 
 /** @param {object} [options] */
 async function ensureDatabaseReady(options) {
   return connectWithRetry(prisma, options);
 }
 
-module.exports = { prisma, ensureDatabaseReady };
+/** Connection + schema sync before pipeline jobs. */
+async function ensurePlatformReady(options) {
+  await ensureDatabaseReady(options);
+  return ensureSchemaReady(prisma);
+}
+
+module.exports = { prisma, ensureDatabaseReady, ensureSchemaReady, ensurePlatformReady };

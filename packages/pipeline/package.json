@@ -8,6 +8,7 @@
     "@ame/core": "*",
     "@ame/database": "*",
     "@ame/ingest": "*",
-    "@ame/scoring": "*"
+    "@ame/scoring": "*",
+    "@ame/video": "*"
   }
 }

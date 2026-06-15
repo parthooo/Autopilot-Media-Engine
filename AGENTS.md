@@ -73,7 +73,7 @@ Channels and sites are **outputs**. All logic stays in this platform.
 | Parent — niche library | **Live** (ingest, score, ~500 topics) |
 | Gate — winner pick | **Live** (Gemini auto-select) |
 | Video child — scripts | **Live** (pillar + Shorts) |
-| Video child — render | **Not built** (Phase 4b) |
+| Video child — render | **Live** (Phase 4b — TTS + slides + FFmpeg) |
 | Article child — generate | **Live** |
 | Video publishers | **Not built** (Phase 5a) |
 | Article publishers | **Not built** (Phase 5b) |

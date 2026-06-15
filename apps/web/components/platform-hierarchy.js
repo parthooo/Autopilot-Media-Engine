@@ -147,7 +147,6 @@ export function PlatformHierarchy({ stats }) {
 
           <PipelineControls
             filterGroup={video.pipelineGroup}
-            filterTrack={video.pipelineTrack}
             inline
             className="hierarchy-controls"
           />
@@ -180,7 +179,6 @@ export function PlatformHierarchy({ stats }) {
 
           <PipelineControls
             filterGroup={article.pipelineGroup}
-            filterTrack={article.pipelineTrack}
             inline
             className="hierarchy-controls"
           />

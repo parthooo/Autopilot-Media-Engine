@@ -26,16 +26,14 @@ export const HIERARCHY = {
     description: "Scripts → render (MP4 long + Shorts)",
     status: "partial",
     statusNote: "Scripts live · render Phase 4b",
-    pipelineGroup: "content",
-    pipelineTrack: "video",
+    pipelineGroup: "content-video",
   },
   article: {
     role: "CHILD",
     title: "Article",
     description: "SEO article cluster from the same winner",
     status: "live",
-    pipelineGroup: "content",
-    pipelineTrack: "article",
+    pipelineGroup: "content-article",
   },
   videoPublishers: {
     role: "SUB",

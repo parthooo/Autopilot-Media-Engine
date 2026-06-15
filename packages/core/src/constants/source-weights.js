@@ -1,12 +1,12 @@
 /** USA audience weight by source slug (0–1) */
 const SOURCE_USA_WEIGHTS = {
+  youtube: 0.85,
   "hacker-news": 0.85,
-  "google-trends": 0.95,
-  reddit: 0.7,
   "dev-to": 0.75,
+  "google-trends": 0.95,
   "github-trending": 0.8,
   "product-hunt": 0.9,
-  youtube: 0.85,
+  reddit: 0.7,
 };
 
 /** Monetization category keyword hints */

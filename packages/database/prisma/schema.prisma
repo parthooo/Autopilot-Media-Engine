@@ -37,6 +37,18 @@ enum ContentAssetStatus {
   published
 }
 
+enum VideoRenderStatus {
+  pending
+  rendering
+  completed
+  failed
+}
+
+enum VideoFormat {
+  long
+  short
+}
+
 model Source {
   id                    String         @id @default(uuid()) @db.Uuid
   name                  String         @db.VarChar(100)
@@ -201,8 +213,31 @@ model ContentAsset {
   updatedAt      DateTime           @updatedAt @map("updated_at") @db.Timestamptz
 
   opportunity    Opportunity        @relation(fields: [opportunityId], references: [id])
+  videoAsset     VideoAsset?
 
   @@index([opportunityId, assetType])
   @@index([status, createdAt(sort: Desc)])
   @@map("content_assets")
+}
+
+model VideoAsset {
+  id              String            @id @default(uuid()) @db.Uuid
+  contentAssetId  String            @unique @map("content_asset_id") @db.Uuid
+  format          VideoFormat
+  filePath        String            @map("file_path") @db.Text
+  durationSeconds Float?            @map("duration_seconds")
+  width           Int
+  height          Int
+  fileSizeBytes   Int?              @map("file_size_bytes")
+  status          VideoRenderStatus @default(pending)
+  errorMessage    String?           @map("error_message") @db.Text
+  metadata        Json              @default("{}")
+  renderedAt      DateTime?         @map("rendered_at") @db.Timestamptz
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamptz
+
+  contentAsset    ContentAsset      @relation(fields: [contentAssetId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt(sort: Desc)])
+  @@map("video_assets")
 }
